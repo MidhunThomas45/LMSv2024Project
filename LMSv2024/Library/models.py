@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
 from django.utils import timezone
+import uuid
+
 
 # Membership model to store membership details
 class Membership(models.Model):
@@ -50,21 +52,48 @@ class Category(models.Model):
         return self.name
 
 
+# Language model to store available languages
+class Language(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+
+class ISBN(models.Model):
+    isbn_number = models.CharField(max_length=13, unique=True)
+    book_content = models.TextField(blank=True, null=True)  # New Field to store book content
+
+    def __str__(self):
+        return self.isbn_number
+
+
+
 # Book model to store book details
 class Book(models.Model):
     title = models.CharField(max_length=150)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    author = models.ForeignKey('Author', on_delete=models.CASCADE)
+    category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True)
+    language = models.ForeignKey('Language', on_delete=models.SET_NULL, null=True, blank=True)
+    isbn = models.ForeignKey('ISBN', on_delete=models.CASCADE, null=True, blank=True)  # New Field
     quantity = models.PositiveIntegerField(default=1)
-    Book_image = models.ImageField(upload_to="Book_image", null=True, blank=True)
+    book_image = models.ImageField(upload_to="Book_image", null=True, blank=True)
     description = models.TextField(blank=True, null=True)
-    Language= models.CharField(max_length=150)
-    added_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # New Field
+    added_by = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     add_time = models.TimeField(default=timezone.now)
     add_date = models.DateField(default=date.today)
 
     class Meta:
         unique_together = ("title", "author")
+
+    def save(self, *args, **kwargs):
+        if not self.isbn:
+            # Automatically generate and assign an ISBN if not already provided
+            isbn_instance = ISBN.objects.create()
+            self.isbn = isbn_instance
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title

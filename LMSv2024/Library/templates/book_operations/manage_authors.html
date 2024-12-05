@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Authors</title>
+</head>
+<body>
+    <h1>Manage Authors</h1>
+
+    <!-- Add Author Form -->
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="Name" required>
+        <textarea name="biography" placeholder="Biography"></textarea>
+        <input type="date" name="date_of_birth">
+        <input type="date" name="date_of_death">
+        <button type="submit">Add Author</button>
+    </form>
+
+    <!-- Author List -->
+    <h2>Authors List</h2>
+    <ul>
+        {% for author in authors %}
+        <li>
+            {{ author.name }} ({{ author.date_of_birth }} - {{ author.date_of_death }})
+            <a href="{% url 'update_author' author.id %}">Edit</a>
+            <a href="{% url 'delete_author' author.id %}">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
