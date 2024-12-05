@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2>Welcome, {{ user.username }}</h2>
+    <h4>Your Issued Books:</h4>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Issue Date</th>
+            <th>Return Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for book in issued_books %}
+            <tr>
+                <td>{{ book.book.title }}</td>
+                <td>{{ book.issue_date }}</td>
+                <td>{{ book.return_date|default:"Not Returned" }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="3">No books issued.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'logout_user' %}" class="btn btn-danger">Logout</a>
+</div>
+{% endblock %}

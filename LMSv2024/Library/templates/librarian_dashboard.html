@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Librarian Dashboard{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2>Welcome, Librarian</h2>
+    <div class="d-flex gap-3 flex-wrap">
+        <a href="{% url 'manage_memberships' %}" class="btn btn-success">Manage Memberships</a>
+        <a href="{% url 'manage_authors' %}" class="btn btn-primary">Manage Authors</a>
+        <a href="{% url 'manage_categories' %}" class="btn btn-info">Manage Categories</a>
+        <a href="{% url 'manage_books' %}" class="btn btn-warning">Manage Books</a>
+        <a href="{% url 'issue_book' %}" class="btn btn-secondary">Issue Books</a>
+        <a href="{% url 'view_issued_books' %}" class="btn btn-dark">View Issued Books</a>
+    </div>
+    <a href="{% url 'logout_user' %}" class="btn btn-danger mt-3">Logout</a>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to the Library Management System{% endblock %}
+
+{% block style %}
+<style>
+    main {
+        padding: 2rem;
+        text-align: center;
+    }
+    a {
+        display: inline-block;
+        margin: 1rem;
+        padding: 0.5rem 1.5rem;
+        text-decoration: none;
+        color: white;
+        background: #007bff;
+        border-radius: 5px;
+    }
+    a:hover {
+        background: #0056b3;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <header class="bg-primary text-white text-center py-3">
+        <h1>Welcome to the Library Management System</h1>
+    </header>
+    <main>
+        <h2>Explore Our Library</h2>
+        <p>Please login or register to access the library system.</p>
+        <a href="{% url 'login_user' %}">Login</a>
+        <a href="{% url 'register' %}">Register</a>
+    </main>
+{% endblock %}
