@@ -1,5 +1,80 @@
 {% extends 'base.html' %}
 {% block content %}
+<style>
+    .container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    form {
+        margin-top: 15px;
+    }
+
+    label {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        outline: none;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-secondary {
+        display: block;
+        margin: 10px auto;
+        text-align: center;
+        padding: 10px;
+        font-size: 16px;
+        background-color: #6c757d;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        color: white;
+    }
+</style>
+
 <div class="container">
     <h2>Add Author</h2>
     <form method="POST">
@@ -10,4 +85,3 @@
     <a href="{% url 'manage_authors' %}" class="btn btn-secondary mt-3">Back to Authors</a>
 </div>
 {% endblock %}
-#hello
