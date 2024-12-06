@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Librarian Dashboard{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2>Welcome, Librarian</h2>
+    <div class="d-flex gap-3 flex-wrap">
+        <!-- Manage Memberships -->
+        <a href="{% url 'manage_memberships' %}" class="btn btn-success">Manage Memberships</a>
+        
+        <!-- Manage Authors -->
+        <a href="{% url 'manage_authors' %}" class="btn btn-primary">Manage Authors</a>
+        
+        <!-- The following buttons for update and delete require an author_id -->
+        <!-- Example: Replace `1` with a dynamic ID if rendering a list of authors -->
+        <a href="{% url 'update_author' 1 %}" class="btn btn-primary">Update Authors</a>
+        <a href="{% url 'delete_author' 1 %}" class="btn btn-primary">Delete Authors</a>
+        
+        <!-- Manage Categories -->
+        <a href="{% url 'manage_categories' %}" class="btn btn-info">Manage Categories</a>
+        
+        <!-- The following buttons for update and delete require a category_id -->
+        <!-- Example: Replace `1` with a dynamic ID if rendering a list of categories -->
+        <a href="{% url 'update_category' 1 %}" class="btn btn-info">Update Categories</a>
+        <a href="{% url 'delete_category' 1 %}" class="btn btn-info">Delete Categories</a>
+        
+        <!-- Manage Books -->
+        <a href="{% url 'manage_books' %}" class="btn btn-warning">Manage Books</a>
+        
+        <!-- The following buttons for update and delete require a book_id -->
+        <!-- Example: Replace `1` with a dynamic ID if rendering a list of books -->
+        <a href="{% url 'update_book' 1 %}" class="btn btn-warning">Update Books</a>
+        <a href="{% url 'delete_book' 1 %}" class="btn btn-warning">Delete Books</a>
+        
+        <!-- Issue Books -->
+        <a href="{% url 'issue_book' %}" class="btn btn-secondary">Issue Books</a>
+        
+        <!-- View Issued Books -->
+        <a href="{% url 'view_issued_books' %}" class="btn btn-dark">View Issued Books</a>
+    </div>
+    
+</div>
+{% endblock %}

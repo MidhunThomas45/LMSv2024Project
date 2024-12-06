@@ -1,0 +1,137 @@
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+  <style>
+    /* Navbar Custom Styles */
+    .navbar {
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .navbar-brand {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #145e0a !important; /* Green text for logo */
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .navbar-brand img {
+      margin-right: 10px;
+    }
+
+    .nav-link {
+      color: #343a40; /* Default color for nav links */
+      margin-right: 15px;
+      font-size: 1rem;
+      transition: color 0.3s ease-in-out;
+    }
+
+    .nav-link:hover {
+      color: #bb0e5f; /* Pinkish hover effect for nav links */
+    }
+
+    .nav-item:last-child .nav-link {
+      background-color: #29ad1d; /* Green background for button */
+      color: white !important; /* White text */
+      border-radius: 5px;
+      padding: 5px 15px;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    .nav-item:last-child .nav-link:hover {
+      background-color: #1e7815; /* Darker green hover for button */
+    }
+
+    .navbar-toggler {
+      border: none;
+    }
+
+    .navbar-toggler-icon {
+      background-color: #1cb431;
+      border-radius: 3px;
+      width: 30px;
+      height: 3px;
+      position: relative;
+    }
+
+    .navbar-toggler-icon::after,
+    .navbar-toggler-icon::before {
+      content: "";
+      background-color: #1cb431;
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      transition: all 0.3s ease;
+    }
+
+    .navbar-toggler-icon::before {
+      top: -8px;
+    }
+
+    .navbar-toggler-icon::after {
+      top: 8px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+      .nav-link {
+        margin-right: 0;
+        padding: 10px 15px;
+        text-align: center;
+        width: 100%; /* Full width for mobile */
+      }
+
+      .nav-item:last-child .nav-link {
+        padding: 10px 20px;
+        margin-top: 10px;
+      }
+    }
+  </style>
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'landing_page' %}">
+      {% load static %}
+      <img
+        src="{% static 'images/logo.png' %}"
+        alt="logo"
+        width="30"
+        height="30"
+        class="d-inline-block align-text-top"
+      />
+      LOOPLIT
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+            <a class="nav-link" href="">Home</a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link" href="">Membership</a>
+        </li>
+        <li class="nav-item">
+          {% if request.user.is_authenticated %}
+          <a class="nav-link btn-logout" href="{% url 'logout_user' %}"
+            >Logout</a
+          >
+          {% else %}
+          <a class="nav-link btn-login" href="{% url 'login_user' %}">Login</a>
+          {% endif %}
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
