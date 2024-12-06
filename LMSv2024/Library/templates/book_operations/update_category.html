@@ -1,17 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Category</title>
-</head>
-<body>
-    <h1>Update Category</h1>
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Update Category</h2>
     <form method="POST">
         {% csrf_token %}
-        <input type="text" name="name" value="{{ category.name }}" required>
-        <textarea name="description">{{ category.description }}</textarea>
-        <button type="submit">Update Category</button>
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Update Category</button>
+        <a href="{% url 'manage_categories' %}" class="btn btn-secondary">Back to Categories</a>
     </form>
-</body>
-</html>
+</div>
+{% endblock %}

@@ -1,6 +1,9 @@
 from django import forms
-from .models import User
-from django.forms import ValidationError
+from .models import User, Book, Author, Category, ISBN
+from django.core.exceptions import ValidationError
+import re
+from django import forms
+from .models import Book, Author, Category
 
 
 class UserRegistratioForm(forms.ModelForm): #using ModelForm
@@ -29,3 +32,29 @@ class UserRegistratioForm(forms.ModelForm): #using ModelForm
                 raise ValidationError('Password does not match!!!')
             
             return cd['password2']
+        
+
+
+from django import forms
+from .models import Book, Author, Category
+
+class BookForm(forms.ModelForm):
+    class Meta:
+        model = Book
+        fields = [
+            'title', 'author', 'category', 'language', 'isbn', 
+            'quantity', 'book_image', 'description', 'price'
+        ]
+
+
+class AuthorForm(forms.ModelForm):
+    class Meta:
+        model = Author
+        fields = ['name', 'biography', 'date_of_birth', 'date_of_death']
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ['name', 'description']
+
+

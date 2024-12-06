@@ -1,44 +1,200 @@
+<style>
+
+    /* General Dashboard Styles */
+.container {
+    margin-top: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 1200px;
+    padding: 0 1rem;
+}
+
+/* Welcome Note Styles */
+.alert-primary {
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.alert-primary h4 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.alert-primary p {
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Flexbox for Card Layout */
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.card {
+    flex: 1 1 calc(33% - 1rem); /* 3 cards in a row */
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    min-width: 250px;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+    background-color: #007bff;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+}
+
+.card-body {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Button Styling in Cards */
+.card-body a {
+    display: inline-block;
+    font-size: 1rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    color: #007bff;
+    border: 1px solid #007bff;
+    background-color: #fff;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    text-align: center;
+}
+
+.card-body a:hover {
+    background-color: #0056b3;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* General Button Styling */
+.btn {
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+    text-decoration: none;
+}
+
+/* Flexbox for Button Container */
+.d-flex {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+/* Headings and Text Styling */
+h2 {
+    color: #007bff;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+</style>
 {% extends 'base.html' %}
 
 {% block title %}Librarian Dashboard{% endblock %}
 
-{% block body %}
+{% block content %}
 <div class="container mt-5">
-    <h2>Welcome, Librarian</h2>
-    <div class="d-flex gap-3 flex-wrap">
-        <!-- Manage Memberships -->
-        <a href="{% url 'manage_memberships' %}" class="btn btn-success">Manage Memberships</a>
-        
-        <!-- Manage Authors -->
-        <a href="{% url 'manage_authors' %}" class="btn btn-primary">Manage Authors</a>
-        
-        <!-- The following buttons for update and delete require an author_id -->
-        <!-- Example: Replace `1` with a dynamic ID if rendering a list of authors -->
-        <a href="{% url 'update_author' 1 %}" class="btn btn-primary">Update Authors</a>
-        <a href="{% url 'delete_author' 1 %}" class="btn btn-primary">Delete Authors</a>
-        
-        <!-- Manage Categories -->
-        <a href="{% url 'manage_categories' %}" class="btn btn-info">Manage Categories</a>
-        
-        <!-- The following buttons for update and delete require a category_id -->
-        <!-- Example: Replace `1` with a dynamic ID if rendering a list of categories -->
-        <a href="{% url 'update_category' 1 %}" class="btn btn-info">Update Categories</a>
-        <a href="{% url 'delete_category' 1 %}" class="btn btn-info">Delete Categories</a>
-        
-        <!-- Manage Books -->
-        <a href="{% url 'manage_books' %}" class="btn btn-warning">Manage Books</a>
-        
-        <!-- The following buttons for update and delete require a book_id -->
-        <!-- Example: Replace `1` with a dynamic ID if rendering a list of books -->
-        <a href="{% url 'update_book' 1 %}" class="btn btn-warning">Update Books</a>
-        <a href="{% url 'delete_book' 1 %}" class="btn btn-warning">Delete Books</a>
-        
-        <!-- Issue Books -->
-        <a href="{% url 'issue_book' %}" class="btn btn-secondary">Issue Books</a>
-        
-        <!-- View Issued Books -->
-        <a href="{% url 'view_issued_books' %}" class="btn btn-dark">View Issued Books</a>
+    <!-- Welcome Message -->
+    <div class="alert alert-primary text-center" role="alert">
+        <h4 class="mb-0">Welcome, {{ request.user.first_name|default:"Librarian" }}!</h4>
+        <p class="mb-0">Manage the library efficiently with the tools below.</p>
     </div>
-    
+
+    <h2 class="text-center mb-4">Librarian Dashboard</h2>
+
+    <!-- Membership Management -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h4>Manage Memberships</h4>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'manage_memberships' %}" class="btn btn-success w-100">Manage Memberships</a>
+        </div>
+    </div>
+
+    <!-- Authors Management -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4>Manage Authors</h4>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'manage_authors' %}" class="btn btn-primary w-100">Manage Authors</a>
+        </div>
+    </div>
+
+    <!-- Categories Management -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-info text-white">
+            <h4>Manage Categories</h4>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'manage_categories' %}" class="btn btn-info w-100">Manage Categories</a>
+        </div>
+    </div>
+
+    <!-- Books Management -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-warning text-white">
+            <h4>Manage Books</h4>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'manage_books' %}" class="btn btn-warning w-100">Manage Books</a>
+        </div>
+    </div>
+
+    <!-- Issued Books Management -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-secondary text-white">
+            <h4>Issued Books</h4>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'issue_book' %}" class="btn btn-secondary mb-2 w-100">Issue Book</a>
+            <a href="{% url 'view_issued_books' %}" class="btn btn-dark w-100">View Issued Books</a>
+        </div>
+    </div>
 </div>
 {% endblock %}
