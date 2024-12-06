@@ -1,32 +1,92 @@
-<style>
-    input, select, textarea {
-    padding: 10px;
-    width: 100%; /* Makes all fields the same width */
-    box-sizing: border-box; /* Ensures padding is included in the width calculation */
-}
-
-</style>
-
 {% extends 'base.html' %}
 {% block content %}
+<style>
+    .container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #ffffff;
+        box-shadow: 2px 0px 23px -7px rgba(0, 0, 0, 0.144);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #333;
+    }
+
+    label {
+        font-size: 12px;
+        color: #888;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        outline: none;
+    }
+
+    button {
+        margin-right: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+</style>
+
 <div class="container">
     <h2>Edit Book: {{ book.title }}</h2>
-    <form method="POST" enctype="multipart/form-data" style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #ffffff;box-shadow: 2px 0px 23px -7px rgba(0, 0, 0, 0.144);">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         
-        <div style="margin-bottom: 20px;">
-            {% for field in form %}
-                <div style="margin-bottom: 20px;">
-                    <label for="{{ field.id_for_label }}" style="font-size: 12px; color: #888; display: block; margin-bottom: 8px;">{{ field.label }}</label>
-                    <div style="position: relative;">
-                        {{ field }}
-                    </div>
-                </div>
-            {% endfor %}
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
         </div>
+        {% endfor %}
         
-        <button type="submit" class="btn btn-success" style="margin-right: 10px; padding: 10px 20px; font-size: 16px;">Update Book</button>
-        <a href="{% url 'manage_books' %}" class="btn btn-secondary" style="padding: 10px 20px; font-size: 16px;">Cancel</a>
+        <button type="submit" class="btn btn-success">Update Book</button>
+        <a href="{% url 'manage_books' %}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
 {% endblock %}
