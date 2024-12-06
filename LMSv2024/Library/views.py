@@ -3,12 +3,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User, Group
 from django.http import HttpResponse
-from .forms import UserRegistratioForm
-from .models import ISBN, Language, Membership, Author, Category, Book, IssuedBook
 from django.contrib import messages
+from django.db.models import Q
 from datetime import date
-
-
+from .forms import UserRegistratioForm, BookForm, AuthorForm, CategoryForm
+from .models import ISBN, Language, Membership, Author, Category, Book, IssuedBook
 
 def landing_page(request):
     return render(request, "landing_page.html")
@@ -113,161 +112,190 @@ def manage_memberships(request):
     return render(request, "manage_memberships.html", {"memberships": memberships})
 
 
-# Authors CRUD (Librarian only)
-@login_required
-@user_passes_test(is_librarian)
-def manage_authors(request):
-    authors = Author.objects.all()
-    if request.method == "POST":
-        name = request.POST.get("name")
-        bio = request.POST.get("biography")
-        dob = request.POST.get("date_of_birth")
-        dod = request.POST.get("date_of_death")
-        Author.objects.create(name=name, biography=bio, date_of_birth=dob, date_of_death=dod)
-        messages.success(request, "Author added successfully!")
-        return redirect("manage_authors")
-    return render(request, "book_operations/manage_authors.html", {"authors": authors})
 
-# Update Author
-@login_required
-@user_passes_test(is_librarian)
-def update_author(request, author_id):
+
+# Books Management
+def manage_books(request):
+    query = request.GET.get('q', '')
+    books = Book.objects.all()
+
+    # Apply search filter if a query is provided
+    if query:
+        books = books.filter(Q(title__icontains=query) | Q(author__name__icontains=query))
+
+    # Initialize an empty form for rendering purposes
+    form = BookForm()
+
+    if request.method == 'POST':
+        if 'add' in request.POST:
+            form = BookForm(request.POST, request.FILES)  # Bind form data for adding a book
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Book added successfully!')
+                return redirect('manage_books')
+            else:
+                messages.error(request, 'Error adding the book. Please check the form.')
+        elif 'update' in request.POST:
+            book_id = request.POST.get('book_id')
+            if not book_id:
+                messages.error(request, 'Book ID is required to update a book.')
+                return redirect('manage_books')
+
+            book = get_object_or_404(Book, id=book_id)
+            form = BookForm(request.POST, request.FILES, instance=book)  # Bind form data for updating the book
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Book updated successfully!')
+                return redirect('manage_books')
+            else:
+                messages.error(request, 'Error updating the book. Please check the form.')
+
+    return render(request, 'book_operations/manage_books.html', {'books': books, 'query': query, 'form': form})
+
+
+
+def delete_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    book.delete()
+    messages.success(request, 'Book deleted successfully!')
+    return redirect('manage_books')
+
+
+
+# Manage Authors - List and Search
+def manage_authors(request):
+    query = request.GET.get('q', '')
+    authors = Author.objects.all()
+    if query:
+        authors = authors.filter(name__icontains=query)
+    return render(request, 'book_operations/manage_authors.html', {'authors': authors, 'query': query})
+
+# Add Author
+def add_author(request):
+    if request.method == 'POST':
+        form = AuthorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Author added successfully!')
+            return redirect('manage_authors')
+    else:
+        form = AuthorForm()
+    return render(request, 'book_operations/add_author.html', {'form': form})
+
+# Edit Author
+def edit_author(request, author_id):
     author = get_object_or_404(Author, id=author_id)
-    if request.method == "POST":
-        author.name = request.POST.get("name")
-        author.biography = request.POST.get("biography")
-        author.date_of_birth = request.POST.get("date_of_birth")
-        author.date_of_death = request.POST.get("date_of_death")
-        author.save()
-        messages.success(request, "Author updated successfully!")
-        return redirect("manage_authors")
-    return render(request, "book_operations/update_author.html", {"author": author})
+    if request.method == 'POST':
+        form = AuthorForm(request.POST, instance=author)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Author updated successfully!')
+            return redirect('manage_authors')
+    else:
+        form = AuthorForm(instance=author)
+    return render(request, 'book_operations/edit_author.html', {'form': form, 'author': author})
 
 # Delete Author
-@login_required
-@user_passes_test(is_librarian)
 def delete_author(request, author_id):
     author = get_object_or_404(Author, id=author_id)
-    if request.method == "POST":
-        author.delete()
-        messages.success(request, "Author deleted successfully!")
-        return redirect("manage_authors")
-    return render(request, "book_operations/delete_author.html", {"author": author})
+    author.delete()
+    messages.success(request, 'Author deleted successfully!')
+    return redirect('manage_authors')
 
 
 
-# Categories CRUD (Librarian only)
-@login_required
-@user_passes_test(is_librarian)
+# List and Search Categories
 def manage_categories(request):
+    query = request.GET.get('q', '')  # Search query
     categories = Category.objects.all()
-    if request.method == "POST":
-        name = request.POST.get("name")
-        description = request.POST.get("description")
-        Category.objects.create(name=name, description=description)
-        messages.success(request, "Category added successfully!")
-        return redirect("manage_categories")
-    return render(request, "book_operations/manage_categories.html", {"categories": categories})
+    if query:
+        categories = categories.filter(name__icontains=query)
+
+    return render(request, 'book_operations/manage_categories.html', {'categories': categories, 'query': query})
+
+
+# Add Category
+def add_category(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Category added successfully!')
+            return redirect('manage_categories')
+    else:
+        form = CategoryForm()
+    return render(request, 'book_operations/add_category.html', {'form': form})
+
 
 # Update Category
-@login_required
-@user_passes_test(is_librarian)
 def update_category(request, category_id):
     category = get_object_or_404(Category, id=category_id)
-    if request.method == "POST":
-        category.name = request.POST.get("name")
-        category.description = request.POST.get("description")
-        category.save()
-        messages.success(request, "Category updated successfully!")
-        return redirect("manage_categories")
-    return render(request, "book_operations/update_category.html", {"category": category})
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Category updated successfully!')
+            return redirect('manage_categories')
+    else:
+        form = CategoryForm(instance=category)
+    return render(request, 'book_operations/update_category.html', {'form': form, 'category': category})
+
 
 # Delete Category
-@login_required
-@user_passes_test(is_librarian)
 def delete_category(request, category_id):
     category = get_object_or_404(Category, id=category_id)
-    if request.method == "POST":
-        category.delete()
-        messages.success(request, "Category deleted successfully!")
-        return redirect("manage_categories")
-    return render(request, "book_operations/delete_category.html", {"category": category})
+    category.delete()
+    messages.success(request, 'Category deleted successfully!')
+    return redirect('manage_categories')
 
 
+
+# Check if user is a librarian
 def is_librarian(user):
     return user.groups.filter(name='Librarian').exists()
 
-# Books CRUD (Librarian only)
+# Manage Books - List and Search
 @login_required
 @user_passes_test(is_librarian)
 def manage_books(request):
-    books = Book.objects.all()
-    authors = Author.objects.all()
-    categories = Category.objects.all()
-    languages = Language.objects.all()
-    isbns = ISBN.objects.all()
+    query = request.GET.get('q', '')  # Search query
+    books = Book.objects.all().order_by('category__name', 'title')  # List books category-wise
 
+    if query:
+        books = books.filter(title__icontains=query)
+
+    return render(request, 'book_operations/manage_books.html', {'books': books, 'query': query})
+
+# Add Book
+@login_required
+@user_passes_test(is_librarian)
+def add_book(request):
     if request.method == "POST":
-        title = request.POST.get("title")
-        author_id = request.POST.get("author")
-        category_id = request.POST.get("category")
-        language_id = request.POST.get("language")
-        isbn_id = request.POST.get("isbn")
-        quantity = request.POST.get("quantity")
-        description = request.POST.get("description")
-        price = request.POST.get("price")
-        book_image = request.FILES.get("book_image")
-
-        author = get_object_or_404(Author, id=author_id)
-        category = get_object_or_404(Category, id=category_id)
-        language = get_object_or_404(Language, id=language_id)
-        isbn = get_object_or_404(ISBN, id=isbn_id)
-
-        # Create the book object
-        Book.objects.create(
-            title=title,
-            author=author,
-            category=category,
-            language=language,
-            isbn=isbn,
-            quantity=quantity,
-            description=description,
-            price=price,
-            book_image=book_image,
-            added_by=request.user
-        )
-
-        messages.success(request, "Book added successfully!")
-        return redirect("manage_books")
-
-    return render(request, "book_operations/manage_books.html", {
-        "books": books,
-        "authors": authors,
-        "categories": categories,
-        "languages": languages,
-        "isbns": isbns
-    })
-
+        form = BookForm(request.POST, request.FILES)
+        if form.is_valid():
+            book = form.save(commit=False)
+            book.added_by = request.user  # Automatically add the librarian
+            book.save()
+            messages.success(request, "Book added successfully!")
+            return redirect('manage_books')
+    else:
+        form = BookForm()
+    return render(request, 'book_operations/add_book.html', {'form': form})
 
 # Update Book
 @login_required
 @user_passes_test(is_librarian)
 def update_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
-    authors = Author.objects.all()
-    categories = Category.objects.all()
     if request.method == "POST":
-        book.title = request.POST.get("title")
-        author_id = request.POST.get("author")
-        category_id = request.POST.get("category")
-        book.quantity = request.POST.get("quantity")
-        book.description = request.POST.get("description")
-        book.author = get_object_or_404(Author, id=author_id)
-        book.category = get_object_or_404(Category, id=category_id)
-        book.save()
-        messages.success(request, "Book updated successfully!")
-        return redirect("manage_books")
-    return render(request, "book_operations/update_book.html", {"book": book, "authors": authors, "categories": categories})
+        form = BookForm(request.POST, request.FILES, instance=book)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Book updated successfully!")
+            return redirect('manage_books')
+    else:
+        form = BookForm(instance=book)
+    return render(request, 'book_operations/update_book.html', {'form': form, 'book': book})
 
 # Delete Book
 @login_required
@@ -277,8 +305,9 @@ def delete_book(request, book_id):
     if request.method == "POST":
         book.delete()
         messages.success(request, "Book deleted successfully!")
-        return redirect("manage_books")
-    return render(request, "book_operations/delete_book.html", {"book": book})
+        return redirect('manage_books')
+    return render(request, 'book_operations/delete_book.html', {'book': book})
+
 
 
 # Issue Books (Librarian only)

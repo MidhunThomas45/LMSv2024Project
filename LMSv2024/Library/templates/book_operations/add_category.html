@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Add Category</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Add Category</button>
+        <a href="{% url 'manage_categories' %}" class="btn btn-secondary">Back to Categories</a>
+    </form>
+</div>
+{% endblock %}

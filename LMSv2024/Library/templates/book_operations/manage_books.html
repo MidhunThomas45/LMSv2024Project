@@ -1,44 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Books</title>
-</head>
-<body>
-    <h1>Manage Books</h1>
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Manage Books</h2>
 
-    <!-- Add Book Form -->
-    <form method="POST">
-        {% csrf_token %}
-        <input type="text" name="title" placeholder="Title" required>
-        <select name="author" required>
-            <option value="" disabled selected>Select Author</option>
-            {% for author in authors %}
-            <option value="{{ author.id }}">{{ author.name }}</option>
-            {% endfor %}
-        </select>
-        <select name="category">
-            <option value="" disabled selected>Select Category</option>
-            {% for category in categories %}
-            <option value="{{ category.id }}">{{ category.name }}</option>
-            {% endfor %}
-        </select>
-        <input type="number" name="quantity" placeholder="Quantity" min="1" required>
-        <textarea name="description" placeholder="Description"></textarea>
-        <button type="submit">Add Book</button>
-    </form>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <a href="{% url 'add_book' %}" class="btn btn-primary">Add New Book</a>
 
-    <!-- Book List -->
-    <h2>Books List</h2>
-    <ul>
-        {% for book in books %}
-        <li>
-            {{ book.title }} by {{ book.author.name }} (Category: {{ book.category.name }})
-            <a href="{% url 'update_book' book.id %}">Edit</a>
-            <a href="{% url 'delete_book' book.id %}">Delete</a>
-        </li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+        <form method="GET" class="mb-4">
+            <input type="text" name="q" placeholder="Search Books..." value="{{ query }}" class="form-control" />
+        </form>
+    </div>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th>Book Image</th> <!-- New column for image -->
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+            <tr>
+                <td>
+                    {% if book.book_image %}
+                        <img src="{{ book.book_image.url }}" alt="{{ book.title }}" style="max-width: 100px; max-height: 100px;">
+                    {% else %}
+                        No Image Available
+                    {% endif %}
+                </td>
+                <td>{{ book.title }}</td>
+                <td>{{ book.author.name }}</td>
+                <td>{{ book.category.name }}</td>
+                <td>{{ book.quantity }}</td>
+                
+                <td>
+                    <a href="{% url 'update_book' book.id %}" class="btn btn-warning">Edit</a>
+                    <a href="{% url 'delete_book' book.id %}" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+</div>
+{% endblock %}
