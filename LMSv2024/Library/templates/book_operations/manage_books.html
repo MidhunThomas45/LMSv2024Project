@@ -14,11 +14,12 @@
     <table class="table table-striped">
         <thead>
             <tr>
+                <th>Book Image</th>
                 <th>Title</th>
                 <th>Author</th>
                 <th>Category</th>
-                <th>Quantity</th>
-                <th>Book Image</th> <!-- New column for image -->
+                <th>Price</th> <!-- New column for image -->
+                <th>Quantity</th>               
                 <th>Actions</th>
             </tr>
         </thead>
@@ -35,6 +36,7 @@
                 <td>{{ book.title }}</td>
                 <td>{{ book.author.name }}</td>
                 <td>{{ book.category.name }}</td>
+                <td>{{ book.price }}</td>
                 <td>{{ book.quantity }}</td>
                 
                 <td>

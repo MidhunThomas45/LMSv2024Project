@@ -35,7 +35,5 @@ urlpatterns = [
     # Membership URLs (if required)
     path("memberships/", views.manage_memberships, name="manage_memberships"),  # Manage memberships
 
-    # Book Issue and Return
-    path("books/issue/", views.issue_book, name="issue_book"),
-    path("issued-books/", views.view_issued_books, name="view_issued_books"),
+
 ]

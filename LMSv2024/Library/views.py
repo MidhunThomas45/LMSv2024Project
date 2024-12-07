@@ -26,26 +26,28 @@ def is_student(user):
 
 def register(request):
     if request.method == 'POST':
-        #we will be getting username and password through Post
-        user_req_form= UserRegistratioForm(request.POST)
+        user_req_form = UserRegistratioForm(request.POST)
         if user_req_form.is_valid():
-            #create the form, but will not save it
-            new_user= user_req_form.save(commit=False)
+            # Create user instance without saving
+            new_user = user_req_form.save(commit=False)
             
-
-            #set the password after validation
-            #checking password == confirm password
-            #password value is assigned to password field
+            # Set the password
             new_user.set_password(user_req_form.cleaned_data['password'])
             new_user.save()
-            group = Group.objects.get(name='student')
-            new_user.groups.add(group)
-             #save to db
-            return render(request, 'register_done.html',{'user_req_form':user_req_form})
-        
+
+            # Add user to 'student' group
+            try:
+                group = Group.objects.get(name='student')
+                new_user.groups.add(group)
+            except Group.DoesNotExist:
+                # Handle the case where the group does not exist
+                pass
+            
+            # Render success page
+            return render(request, 'register_done.html', {'user': new_user})
     else:
-        user_req_form= UserRegistratioForm()
-    return render(request, 'register.html',{'user_req_form':user_req_form})
+        user_req_form = UserRegistratioForm()
+    return render(request, 'register.html', {'user_req_form': user_req_form})
 
 
 
@@ -310,33 +312,6 @@ def delete_book(request, book_id):
 
 
 
-# Issue Books (Librarian only)
-@login_required
-@user_passes_test(is_librarian)
-def issue_book(request):
-    books = Book.objects.filter(quantity__gt=0)
-    users = User.objects.filter(groups__name="Student")
-    if request.method == "POST":
-        book_id = request.POST.get("book")
-        user_id = request.POST.get("user")
-        book = get_object_or_404(Book, id=book_id)
-        user = get_object_or_404(User, id=user_id)
-        IssuedBook.objects.create(book=book, user=user, issue_date=date.today())
-        book.quantity -= 1
-        book.save()
-        messages.success(request, "Book issued successfully!")
-        return redirect("issue_book")
-    return render(request, "issue_book.html", {"books": books, "users": users})
 
 
-# View Issued Books (Librarian and Student)
-@login_required
-def view_issued_books(request):
-    if is_librarian(request.user):
-        issued_books = IssuedBook.objects.all()
-    elif is_student(request.user):
-        issued_books = IssuedBook.objects.filter(user=request.user)
-    else:
-        return HttpResponse("Access Denied", status=403)
-    return render(request, "view_issued_books.html", {"issued_books": issued_books})
 
