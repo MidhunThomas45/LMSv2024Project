@@ -1,33 +1,82 @@
-{% extends 'base.html' %}
-
-{% block title %}Student Dashboard{% endblock %}
+{% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2>Welcome, {{ user.username }}</h2>
-    <h4>Your Issued Books:</h4>
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>Title</th>
-            <th>Issue Date</th>
-            <th>Return Date</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for book in issued_books %}
-            <tr>
-                <td>{{ book.book.title }}</td>
-                <td>{{ book.issue_date }}</td>
-                <td>{{ book.return_date|default:"Not Returned" }}</td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="3">No books issued.</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    
+<style>
+    /* Fix for the topbar covering content */
+    body {
+        padding-top: 70px; /* Adjust this value based on your topbar height */
+    }
+
+    /* Styling for square cards */
+    .card {
+        height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-radius: 10px;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Ensure proper spacing between rows */
+    .row {
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="container mt-4">
+    <h1 class="text-center">Student Dashboard</h1>
+
+    <!-- Flexbox Square Cards -->
+    <div class="row mt-5 justify-content-center">
+        <!-- Books -->
+        <div class="col-md-3 mb-4">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Books</h5>
+                    <p class="card-text">Explore books by category and read after membership.</p>
+                    <a href="{% url 'available_books' %}" class="btn btn-primary">View Books</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Membership -->
+        <div class="col-md-3 mb-4">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Membership</h5>
+                    <p class="card-text">View membership plans and check details of your subscription.</p>
+                    <a href="{% url 'my_membership' membership.id %}" class="btn btn-success">Membership Plans</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rent List -->
+        <div class="col-md-3 mb-4">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Rent List</h5>
+                    <p class="card-text">View the list of books you have rented.</p>
+                    <a href="{% url 'rent_list' %}" class="btn btn-warning">View Rent List</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchase List -->
+        <div class="col-md-3 mb-4">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Purchase List</h5>
+                    <p class="card-text">View books you have purchased and their details.</p>
+                    <a href="{% url 'purchase_list' %}" class="btn btn-info">View Purchase List</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

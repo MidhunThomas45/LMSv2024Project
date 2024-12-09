@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Add padding to the top for the topbar */
+    body {
+        padding-top: 70px; /* Adjust based on your topbar height */
+    }
+
+    /* Card styling */
+    .book-content-card {
+        margin: 20px auto;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .book-content-card .card-body {
+        background-color: #f9f9f9;
+        padding: 20px;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    /* Back to Dashboard button styling */
+    .back-button {
+        display: block;
+        margin: 20px auto;
+        width: fit-content;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="container mt-4">
+    <h1 class="text-center">{{ book.title }}</h1>
+
+    <!-- Book Content Card -->
+    <div class="card book-content-card mt-4">
+        <div class="card-body">
+            <h4>Book Content</h4>
+            <p>{{ book.isbn.book_content }}</p>
+        </div>
+    </div>
+
+    <!-- Back to Dashboard Button -->
+    <a href="{% url 'student_dashboard' %}" class="back-button">Back to Dashboard</a>
+</div>
+{% endblock %}

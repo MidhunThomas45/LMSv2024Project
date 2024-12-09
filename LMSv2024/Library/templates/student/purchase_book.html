@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center">Purchase {{ book.title }}</h1>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <h4>Book Details</h4>
+            <p><strong>Title:</strong> {{ book.title }}</p>
+            <p><strong>Author:</strong> {{ book.author.name }}</p>
+            <p><strong>Price:</strong> ${{ book.price }}</p>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="address">Delivery Address:</label>
+                    <textarea name="address" id="address" class="form-control" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Purchase</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

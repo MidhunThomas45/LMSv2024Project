@@ -1,36 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import date
+from datetime import date, timedelta
 from django.utils import timezone
-import uuid
-
-
-# Membership model to store membership details
-class Membership(models.Model):
-    MEMBERSHIP_CHOICES = [
-        ('GOLD', 'Gold'),
-        ('PLATINUM', 'Platinum'),
-        ('DIAMOND', 'Diamond'),
-    ]
-    name = models.CharField(max_length=20, choices=MEMBERSHIP_CHOICES, unique=True)
-    price_per_month = models.DecimalField(max_digits=6, decimal_places=2)
-    book_access_percentage = models.PositiveIntegerField(help_text="Percentage of books accessible with this plan")
-    users = models.ManyToManyField(User, related_name='memberships', through='UserMembership')
-
-    def __str__(self):
-        return self.name
-
-
-# Intermediary table to manage user memberships with additional fields
-class UserMembership(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    membership = models.ForeignKey(Membership, on_delete=models.CASCADE)
-    start_date = models.DateField(default=date.today)
-    end_date = models.DateField(blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.user.username} - {self.membership.name}"
-
 
 # Author model to store author details
 class Author(models.Model):
@@ -60,14 +31,12 @@ class Language(models.Model):
         return self.name
 
 
-
 class ISBN(models.Model):
     isbn_number = models.CharField(max_length=13, unique=True)
     book_content = models.TextField(blank=True, null=True)  # New Field to store book content
 
     def __str__(self):
         return self.isbn_number
-
 
 
 # Book model to store book details
@@ -112,3 +81,84 @@ class IssuedBook(models.Model):
 
     def __str__(self):
         return f"{self.book.title} issued by {self.user.username} on {self.issue_date}"
+
+
+# Payment model to store payment details
+class Payment(models.Model):
+    PAYMENT_TYPES = [
+        ('Membership', 'Membership'),
+        ('Purchase', 'Purchase'),
+        ('Rent', 'Rent'),
+    ]
+    
+    PAYMENT_METHOD = [
+        ('Card', 'Card'),
+        ('UPI', 'UPI'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_date = models.DateTimeField(auto_now_add=True)
+    payment_type = models.CharField(max_length=20, choices=PAYMENT_TYPES)
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD, default='Card')  # Set a default value
+
+    def __str__(self):
+        return f"{self.user.username} - {self.payment_type} - {self.amount} - {self.payment_method}"
+
+
+# Membership model to store membership details
+class Membership(models.Model):
+    MEMBERSHIP_CHOICES = [
+        ('GOLD', 'Gold'),
+        ('PLATINUM', 'Platinum'),
+        ('DIAMOND', 'Diamond'),
+    ]
+    name = models.CharField(max_length=20, choices=MEMBERSHIP_CHOICES, unique=True)
+    price_per_month = models.DecimalField(max_digits=6, decimal_places=2)
+    book_access_percentage = models.PositiveIntegerField(help_text="Percentage of books accessible with this plan")
+    
+
+    def __str__(self):
+        return self.name
+
+
+
+class UserMembership(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    membership = models.ForeignKey(Membership, on_delete=models.CASCADE)
+    start_date = models.DateField(default=date.today)
+    end_date = models.DateField(blank=True, null=True)
+    payment = models.ForeignKey('Payment', on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.membership.name} membership"
+
+
+
+# Rent model to store rental details
+class Rent(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    start_date = models.DateField(auto_now_add=True)
+    rental_fee = models.DecimalField(max_digits=6, decimal_places=2)
+    payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, null=True, blank=True)  # Added foreign key to Payment
+
+    @property
+    def end_date(self):
+        return self.start_date + timedelta(days=30)
+
+    def __str__(self):
+        return f"{self.user.username} rented {self.book.title}"
+
+
+# Purchase model to store book purchase details
+class Purchase(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    purchase_date = models.DateTimeField(auto_now_add=True)
+    delivery_address = models.TextField()
+    purchase_price = models.DecimalField(max_digits=6, decimal_places=2)
+    payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, null=True, blank=True)  # Added foreign key to Payment
+
+    def __str__(self):
+        return f"{self.user.username} purchased {self.book.title}"

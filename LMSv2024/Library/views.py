@@ -5,9 +5,12 @@ from django.contrib.auth.models import User, Group
 from django.http import HttpResponse
 from django.contrib import messages
 from django.db.models import Q
-from datetime import date
-from .forms import UserRegistratioForm, BookForm, AuthorForm, CategoryForm
-from .models import ISBN, Language, Membership, Author, Category, Book, IssuedBook
+from datetime import date, timedelta, timezone
+
+from .forms import UserRegistratioForm, BookForm, AuthorForm, CategoryForm, PaymentForm
+from .models import ISBN, Language, Membership, Author, Category, Book, IssuedBook, Rent, Purchase, Payment, UserMembership
+
+
 
 def landing_page(request):
     return render(request, "landing_page.html")
@@ -89,12 +92,6 @@ def librarian_dashboard(request):
     books = Book.objects.all()
     return render(request, "librarian_dashboard.html", {"books": books})
 
-
-@login_required
-@user_passes_test(is_student)
-def student_dashboard(request):
-    issued_books = IssuedBook.objects.filter(user=request.user)
-    return render(request, "student_dashboard.html", {"issued_books": issued_books})
 
 
 ### ---------- CRUD Views for Models ---------- ###
@@ -313,5 +310,182 @@ def delete_book(request, book_id):
 
 
 
+
+
+@login_required
+def student_dashboard(request):
+    """
+    View for the student dashboard after login.
+    Displays books, membership plans, and profile details based on user's membership status.
+    """
+    user = request.user
+    membership = user.usermembership_set.first()  # Get the first membership associated with the user
+
+    # Get all books
+    books = Book.objects.all()
+
+    # Get all membership plans
+    memberships = Membership.objects.all()
+
+    context = {
+        'user': user,
+        'membership': membership,
+        'books': books,
+        'memberships': memberships,
+    }
+    return render(request, 'student_dashboard.html', context)
+
+
+@login_required
+def my_membership(request, membership_id):
+    """
+    View to handle membership payment and subscription.
+    """
+    # Get the selected membership plan
+    membership = get_object_or_404(Membership, id=membership_id)
+
+    if request.method == 'POST':
+        # Record the payment
+        Payment.objects.create(
+            user=request.user,
+            amount=membership.price_per_month,
+            payment_date=date.today(),
+            payment_type='MEMBERSHIP',
+        )
+
+        # Calculate the start date and end date (one month from today)
+        start_date = date.today()
+        end_date = start_date + timedelta(days=30)
+
+        # Create or update the UserMembership
+        user_membership, created = UserMembership.objects.update_or_create(
+            user=request.user,
+            membership=membership,
+            defaults={
+                'start_date': start_date,
+                'end_date': end_date,
+            },
+        )
+
+        # Redirect the user to the student dashboard after successful payment
+        return redirect('student_dashboard')
+
+    # Render the membership payment page with membership details
+    context = {
+        'membership': membership,
+    }
+    return render(request, 'student/my_membership.html', context)
+
+
+
+@login_required
+def available_books(request):
+    """
+    View to display available books based on user's membership plan.
+    """
+    user = request.user
+    membership = user.usermembership_set.first()
+
+    if membership:
+        percentage = membership.membership.book_access_percentage
+        accessible_books_count = Book.objects.count() * percentage // 100
+        accessible_books = Book.objects.all()[:accessible_books_count]
+        rent_books = Book.objects.all()[accessible_books_count:]
+    else:
+        accessible_books = []
+        rent_books = Book.objects.all()
+
+    context = {
+        'accessible_books': accessible_books,
+        'rent_books': rent_books,
+    }
+    return render(request, 'student/available_books.html', context)
+
+
+@login_required
+def rent_book(request, book_id):
+    """
+    View to rent a book for non-accessible books based on membership.
+    """
+    book = get_object_or_404(Book, id=book_id)
+    rent_fee = book.price * 0.1  # 10% of the book price
+
+    Rent.objects.create(
+        user=request.user,
+        book=book,
+        rent_start_date=date.today(),
+        rent_fee=rent_fee,
+    )
+    return redirect('available_books')
+
+
+@login_required
+def purchase_book(request, book_id):
+    """
+    View to purchase a book.
+    """
+    book = get_object_or_404(Book, id=book_id)
+
+    if request.method == 'POST':
+        Purchase.objects.create(
+            user=request.user,
+            book=book,
+            purchase_date=date.today(),
+            delivery_address=request.POST.get('delivery_address'),
+        )
+        return redirect('student_dashboard')
+
+    context = {
+        'book': book,
+    }
+    return render(request, 'student/purchase_book.html', context)
+
+
+@login_required
+def rent_list(request):
+    """
+    View to display the list of rented books by the user.
+    """
+    rents = Rent.objects.filter(user=request.user)
+    context = {'rents': rents}
+    return render(request, 'student/rent_list.html', context)
+
+
+@login_required
+def purchase_list(request):
+    """
+    View to display the list of purchased books by the user.
+    """
+    purchases = Purchase.objects.filter(user=request.user)
+    context = {'purchases': purchases}
+    return render(request, 'student/purchase_list.html', context)
+
+
+
+def create_payment(user: User, amount: float, payment_type: str):
+    """
+    Creates a payment record for the user.
+
+    Args:
+        user (User): The user who is making the payment.
+        amount (float): The amount of the payment.
+        payment_type (str): The type of payment ('Membership', 'Purchase', 'Rent').
+
+    Returns:
+        Payment: The created Payment object.
+    """
+    if payment_type not in ['Membership', 'Purchase', 'Rent']:
+        raise ValueError("Invalid payment type. Valid types are 'Membership', 'Purchase', 'Rent'.")
+
+    # Create the payment object
+    payment = Payment.objects.create(
+        user=user,
+        amount=amount,
+        payment_date=timezone.now(),  # Automatically set the payment date
+        payment_type=payment_type
+    )
+
+    # Return the created Payment object
+    return payment
 
 

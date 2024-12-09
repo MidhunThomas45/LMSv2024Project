@@ -10,7 +10,7 @@ urlpatterns = [
 
     # Dashboard URLs
     path("librarian/dashboard/", views.librarian_dashboard, name="librarian_dashboard"),
-    path("student/dashboard/", views.student_dashboard, name="student_dashboard"),
+
 
     # Book Management URLs
     path('books/', views.manage_books, name='manage_books'),  # List and search books
@@ -23,8 +23,6 @@ urlpatterns = [
     path("authors/add/", views.add_author, name="add_author"),  # Add author
     path("authors/edit/<int:author_id>/", views.edit_author, name="edit_author"),  # Edit author
     path("authors/delete/<int:author_id>/", views.delete_author, name="delete_author"),  # Delete author
-
-
     # Category Management URLs
     path("categories/", views.manage_categories, name="manage_categories"),  # List and search categories
     path("categories/add/", views.add_category, name="add_category"),  # Add category
@@ -34,6 +32,12 @@ urlpatterns = [
 
     # Membership URLs (if required)
     path("memberships/", views.manage_memberships, name="manage_memberships"),  # Manage memberships
-
+    path('student-dashboard/', views.student_dashboard, name='student_dashboard'),
+    path('membership/payment/<int:membership_id>/', views.my_membership, name='my_membership'),
+    path('available-books/', views.available_books, name='available_books'),
+    path('rent-book/<int:book_id>/', views.rent_book, name='rent_book'),
+    path('purchase-book/<int:book_id>/', views.purchase_book, name='purchase_book'),
+    path('rent-list/', views.rent_list, name='rent_list'),
+    path('purchase-list/', views.purchase_list, name='purchase_list'),
 
 ]

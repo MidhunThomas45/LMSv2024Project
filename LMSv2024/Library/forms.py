@@ -1,9 +1,8 @@
 from django import forms
-from .models import User, Book, Author, Category, ISBN
+from .models import User, Book, Author, Category, ISBN, Payment, Purchase
 from django.core.exceptions import ValidationError
 import re
-from django import forms
-from .models import Book, Author, Category
+
 
 
 class UserRegistratioForm(forms.ModelForm):
@@ -53,3 +52,16 @@ class CategoryForm(forms.ModelForm):
         fields = ['name', 'description']
 
 
+
+
+
+class PaymentForm(forms.ModelForm):
+    class Meta:
+        model = Payment
+        fields = ['payment_type']  # Membership or Purchase Payment
+
+
+class PurchaseForm(forms.ModelForm):
+    class Meta:
+        model = Purchase
+        fields = ['delivery_address']  # Capture delivery address for book purchase

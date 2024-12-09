@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center">Available Books</h1>
+
+    <div class="row">
+        {% for book in books %}
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <img src="{{ book.book_image.url }}" class="card-img-top" alt="{{ book.title }}" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ book.title }}</h5>
+                    <p class="card-text">
+                        <strong>Author:</strong> {{ book.author.name }}<br>
+                        <strong>Price:</strong> ${{ book.price }}<br>
+                        {{ book.description|truncatewords:20 }}
+                    </p>
+                    {% if book.accessible %}
+                    <a href="{% url 'read_book' book.id %}" class="btn btn-success btn-block">Read</a>
+                    {% else %}
+                    <a href="{% url 'rent_book' book.id %}" class="btn btn-warning btn-block">Rent for ${{ book.rent_price }}</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
