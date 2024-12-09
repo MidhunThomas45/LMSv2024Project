@@ -6,37 +6,32 @@ from django import forms
 from .models import Book, Author, Category
 
 
-class UserRegistratioForm(forms.ModelForm): #using ModelForm
-    #password
-    password= forms.CharField(
+class UserRegistratioForm(forms.ModelForm):
+    # Password
+    password = forms.CharField(
         label='Password',
         widget=forms.PasswordInput
     )
-    #for confirm password
-    password2= forms.CharField(
+    # Confirm password
+    password2 = forms.CharField(
         label='Confirm Password',
         widget=forms.PasswordInput
     )
 
-    #since inheritance from ModelForm, I can use the model to declare the fields
     class Meta:
-        model= User
-        #fields in the built in Model User
-        fields= ('username','first_name','email','password')
+        model = User
+        fields = ('username', 'first_name', 'email')
 
-        #overriding a inbuilt method to check the password input = confirm password
-        #clean_<fieldname>
-        def clean_password2(self):
-            cd= self.cleaned_data
-            if cd['password'] != cd['password2']:
-                raise ValidationError('Password does not match!!!')
-            
-            return cd['password2']
+    # Ensure passwords match
+    def clean_password2(self):
+        cd = self.cleaned_data
+        if cd.get('password') != cd.get('password2'):
+            raise ValidationError('Passwords do not match!')
+        return cd['password2']
         
 
 
-from django import forms
-from .models import Book, Author, Category
+
 
 class BookForm(forms.ModelForm):
     class Meta:

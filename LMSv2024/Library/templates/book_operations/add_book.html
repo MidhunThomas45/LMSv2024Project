@@ -1,88 +1,85 @@
 {% extends 'base.html' %}
 {% block content %}
+
+<div class="container mt-5">
+    <div class="form-container p-4 shadow-lg rounded">
+        <h2 class="text-center mb-4">Add New Book</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-primary">Add Book</button>
+                <a href="{% url 'manage_books' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
 <style>
-    .container {
-        max-width: 600px;
-        margin: 20px auto;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        background-color: #f9f9f9;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+/* Container styling */
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
 
-    h2 {
-        text-align: center;
-        margin-bottom: 20px;
-        color: #333;
-    }
+/* Form container styling */
+.form-container {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
 
-    form {
-        margin-top: 15px;
-    }
+/* Header styling */
+h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+}
 
-    label {
-        font-size: 12px;
-        color: #666;
-        margin-bottom: 5px;
-        display: block;
-    }
+/* Form styling */
+form {
+    margin-top: 10px;
+}
 
-    input, select, textarea {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 14px;
-    }
+form label {
+    font-weight: bold;
+}
 
-    input:focus, select:focus, textarea:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        outline: none;
-    }
+form input, form textarea, form select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
 
-    button {
-        width: 100%;
-        padding: 10px;
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
-        background-color: #007bff;
-        color: white;
-        cursor: pointer;
-    }
+/* Button styling */
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    padding: 10px 20px;
+}
 
-    button:hover {
-        background-color: #0056b3;
-    }
+.btn-primary:hover {
+    background-color: #0056b3;
+}
 
-    .btn-secondary {
-        width: 100%;
-        margin-top: 10px;
-        padding: 10px;
-        font-size: 16px;
-        background-color: #6c757d;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-        display: block;
-        text-align: center;
-    }
+.btn-secondary {
+    background-color: #6c757d;
+    border: none;
+    padding: 10px 20px;
+}
 
-    .btn-secondary:hover {
-        background-color: #5a6268;
-    }
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Shadow effect for form container */
+.shadow-lg {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 </style>
 
-<div class="container">
-    <h2>Add New Book</h2>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Add Book</button>
-        <a href="{% url 'manage_books' %}" class="btn btn-secondary">Cancel</a>
-    </form>
-</div>
 {% endblock %}

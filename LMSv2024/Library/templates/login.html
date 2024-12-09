@@ -2,9 +2,14 @@
 
 {% block title %}Login{% endblock %}
 
+
+
+{% block content %}
+
 {% block style %}
 <style>
     .login-container {
+        
         max-width: 400px;
         margin: 50px auto;
         padding: 20px;
@@ -21,9 +26,7 @@
     }
 </style>
 {% endblock %}
-
-{% block content %}
-<div class="login-container">
+<div class="login-container"style="margin-top: 10%;">
     <h2>Login</h2>
     <form method="POST" action="">
         {% csrf_token %}

@@ -1,7 +1,56 @@
-<footer class="text-center text-lg-start bg-light text-muted mt-4">
-    <div class="card">
-        <div class="text-center py-2">
-            &copy; {{ current_year }} Library Management System | All Rights Reserved
+<body class="d-flex flex-column min-vh-100">
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+        <!-- Your page content goes here -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white text-center text-dark border-top fixed-footer">
+        <div class="container">
+            <p class="mb-1">Library Management System. All Rights Reserved.</p>
+            <p class="mb-0">Designed by Midhun | Dhanuja</p>
         </div>
-    </div>
-</footer>
+    </footer>
+</body>
+
+<style>
+  /* Layout Styling */
+  body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh; /* Full viewport height */
+  }
+
+  main {
+      flex-grow: 1; /* Push the footer to the bottom when content is insufficient */
+  }
+
+  /* Footer Styling */
+  footer.fixed-footer {
+      background-color: #ffffff; /* White background */
+      color: #212529; /* Dark text color */
+      border-top: 1px solid #dee2e6; /* Subtle border at the top */
+      height: 60px; /* Fixed height for consistent size */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05); /* Soft shadow at the top */
+  }
+
+  footer .container {
+      text-align: center;
+  }
+
+  footer p {
+      margin: 0; /* Remove default margin */
+      font-size: 0.85rem; /* Standard font size */
+      line-height: 1.4;
+  }
+
+  /* Responsive Styling */
+  @media (max-width: 768px) {
+      footer p {
+          font-size: 0.8rem; /* Slightly smaller font size for smaller screens */
+      }
+  }
+</style>

@@ -1,200 +1,187 @@
-<style>
 
-    /* General Dashboard Styles */
-.container {
-    margin-top: 2rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    max-width: 1200px;
-    padding: 0 1rem;
-}
 
-/* Welcome Note Styles */
-.alert-primary {
-    background-color: #007bff;
-    color: #fff;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.alert-primary h4 {
-    font-size: 1.6rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-.alert-primary p {
-    font-size: 1rem;
-    margin: 0;
-}
-
-/* Flexbox for Card Layout */
-.card-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: space-between;
-}
-
-.card {
-    flex: 1 1 calc(33% - 1rem); /* 3 cards in a row */
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 1rem;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    min-width: 250px;
-}
-
-.card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.card-header {
-    background-color: #007bff;
-    color: #fff;
-    font-size: 1.2rem;
-    font-weight: 600;
-    padding: 0.75rem 1rem;
-}
-
-.card-body {
-    padding: 1rem;
-    background-color: #f8f9fa;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-/* Button Styling in Cards */
-.card-body a {
-    display: inline-block;
-    font-size: 1rem;
-    padding: 0.6rem 1.2rem;
-    border-radius: 5px;
-    color: #007bff;
-    border: 1px solid #007bff;
-    background-color: #fff;
-    transition: background-color 0.2s ease, color 0.2s ease;
-    text-align: center;
-}
-
-.card-body a:hover {
-    background-color: #0056b3;
-    color: #fff;
-    text-decoration: none;
-}
-
-/* General Button Styling */
-.btn {
-    background-color: #007bff;
-    border: none;
-    color: #fff;
-    padding: 0.6rem 1.2rem;
-    border-radius: 5px;
-    font-size: 1rem;
-    transition: transform 0.2s ease, background-color 0.2s ease;
-    display: inline-block;
-    text-align: center;
-}
-
-.btn:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-    text-decoration: none;
-}
-
-/* Flexbox for Button Container */
-.d-flex {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-}
-
-/* Headings and Text Styling */
-h2 {
-    color: #007bff;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-}
-
-a {
-    text-decoration: none;
-    color: inherit;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
-</style>
 {% extends 'base.html' %}
 
 {% block title %}Librarian Dashboard{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <!-- Welcome Message -->
-    <div class="alert alert-primary text-center" role="alert">
-        <h4 class="mb-0">Welcome, {{ request.user.first_name|default:"Librarian" }}!</h4>
-        <p class="mb-0">Manage the library efficiently with the tools below.</p>
+<style>
+    /* General Styling */
+    body {
+        background-color: #f5f5f5;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    h2 {
+        color: #333;
+        font-size: 2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    /* Flexbox Grid for Cards */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+
+    /* Card Styling */
+    .dashboard-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .dashboard-card h4 {
+        color: #555;
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+    }
+
+    .dashboard-card a {
+        display: inline-block;
+        font-size: 1rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        color: white;
+        font-weight: bold;
+    }
+
+    /* Specific Colors for Actions */
+    .manage-memberships {
+        background-color: #28a745;
+    }
+
+    .manage-memberships:hover {
+        background-color: #218838;
+    }
+
+    .manage-authors {
+        background-color: #007bff;
+    }
+
+    .manage-authors:hover {
+        background-color: #0056b3;
+    }
+
+    .manage-categories {
+        background-color: #17a2b8;
+    }
+
+    .manage-categories:hover {
+        background-color: #138496;
+    }
+
+    .manage-books {
+        background-color: #ffc107;
+        color: #333;
+    }
+
+    .manage-books:hover {
+        background-color: #e0a800;
+    }
+
+    .manage-issued-books {
+        background-color: #6c757d;
+    }
+
+    .manage-issued-books:hover {
+        background-color: #5a6268;
+    }
+    /* Back Arrow Style */
+    .back-arrow {
+        font-size: 1.5rem; /* Larger arrow */
+        color: rgb(81, 76, 76);
+        text-decoration: none;
+        margin-bottom: 1rem;
+        display: inline-flex;
+        align-items: center;
+        margin-top: 1rem;
+        margin-left: 10px; 
+    }
+
+    .back-arrow:hover {
+        color: #3e4145;
+    }
+
+    .back-arrow i {
+        margin-right: 0;
+    }
+    .user-list {
+    background-color: #17a2b8; /* Same as manage-categories for variety */
+    }
+
+    .user-list:hover {
+        background-color: #138496;
+    }
+
+</style>
+<div class="container">
+    
+    <div class="header-container" style="display:flex;justify-content: space-between;align-items: center;margin: 1rem 0;">
+        <!-- Back Arrow -->
+        <a href="javascript:history.back()" class="back-arrow">
+            <i class="fa-solid fa-arrow-left-long"></i> 
+        </a>
+
+        <!-- Title -->
+        <h2 style="margin: 0;" >Librarian Dashboard</h2>
+        <div></div>
     </div>
-
-    <h2 class="text-center mb-4">Librarian Dashboard</h2>
-
-    <!-- Membership Management -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-success text-white">
+    <!-- Dashboard Grid -->
+    <div class="dashboard-grid">
+        <!-- Membership Management -->
+        <div class="dashboard-card">
             <h4>Manage Memberships</h4>
+            <a href="{% url 'manage_memberships' %}" class="manage-memberships">Memberships</a>
         </div>
-        <div class="card-body">
-            <a href="{% url 'manage_memberships' %}" class="btn btn-success w-100">Manage Memberships</a>
-        </div>
-    </div>
 
-    <!-- Authors Management -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-primary text-white">
+        <!-- Authors Management -->
+        <div class="dashboard-card">
             <h4>Manage Authors</h4>
+            <a href="{% url 'manage_authors' %}" class="manage-authors">Manage Authors</a>
         </div>
-        <div class="card-body">
-            <a href="{% url 'manage_authors' %}" class="btn btn-primary w-100">Manage Authors</a>
-        </div>
-    </div>
 
-    <!-- Categories Management -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-info text-white">
+        <!-- Categories Management -->
+        <div class="dashboard-card">
             <h4>Manage Categories</h4>
+            <a href="{% url 'manage_categories' %}" class="manage-categories">Manage Categories</a>
         </div>
-        <div class="card-body">
-            <a href="{% url 'manage_categories' %}" class="btn btn-info w-100">Manage Categories</a>
-        </div>
-    </div>
 
-    <!-- Books Management -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-warning text-white">
+        <!-- Books Management -->
+        <div class="dashboard-card">
             <h4>Manage Books</h4>
+            <a href="{% url 'manage_books' %}" class="manage-books">Manage Books</a>
         </div>
-        <div class="card-body">
-            <a href="{% url 'manage_books' %}" class="btn btn-warning w-100">Manage Books</a>
-        </div>
-    </div>
 
-    <!-- Issued Books Management -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-secondary text-white">
-            <h4>Issued Books</h4>
+        <!-- User List -->
+        <div class="dashboard-card">
+            <h4>Users List</h4>
+            <a href="{% url 'user_list' %}" class="user-list">Users List</a>
         </div>
-        <div class="card-body">
-            <a href="{% url 'issue_book' %}" class="btn btn-secondary mb-2 w-100">Issue Book</a>
-            <a href="{% url 'view_issued_books' %}" class="btn btn-dark w-100">View Issued Books</a>
-        </div>
+        
     </div>
 </div>
 {% endblock %}
