@@ -116,6 +116,8 @@ def manage_memberships(request):
 # Books Management
 def manage_books(request):
     query = request.GET.get('q', '')
+    print(f"Search Query: {query}")  # Debugging line
+
     books = Book.objects.all()
 
     # Apply search filter if a query is provided
@@ -307,10 +309,16 @@ def delete_book(request, book_id):
         return redirect('manage_books')
     return render(request, 'book_operations/delete_book.html', {'book': book})
 
+#users list
+def user_list(request):
+    query = request.GET.get('q')
+    students_group = Group.objects.get(name='Student')
+    students = User.objects.filter(groups=students_group)
 
+    if query:
+        students = students.filter(username__icontains=query) | students.filter(email__icontains=query) | students.filter(first_name__icontains=query)
 
-
-
+    return render(request, 'user_list.html', {'users': students, 'query': query})
 
 @login_required
 def student_dashboard(request):
