@@ -466,7 +466,7 @@ def purchase_list(request):
     """
     purchases = Purchase.objects.filter(user=request.user)
     context = {'purchases': purchases}
-    return render(request, 'student/purchase_list.html', context)
+    return render(request, 'student/purchased_list.html', context)
 
 
 
