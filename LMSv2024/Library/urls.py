@@ -39,5 +39,7 @@ urlpatterns = [
     path('purchase-book/<int:book_id>/', views.purchase_book, name='purchase_book'),
     path('rent-list/', views.rent_list, name='rent_list'),
     path('purchase-list/', views.purchase_list, name='purchase_list'),
+    #for displaying users list
+    path("users/", views.user_list, name="user_list"),
 
 ]
