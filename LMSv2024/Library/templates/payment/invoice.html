@@ -1,0 +1,34 @@
+<!-- invoice.html -->
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Invoice</h2>
+
+  <p><strong>Payment Details:</strong></p>
+  <ul>
+    <li>Purpose: {{ payment.payment_type }}</li>
+    <li>Amount: ₹{{ payment.amount }}</li>
+    <li>Payment Method: {{ payment.payment_method }}</li>
+    <li>Payment Date: {{ payment.payment_date }}</li>
+  </ul>
+
+  <p><strong>User Details:</strong></p>
+  <ul>
+    <li>Username: {{ user.username }}</li>
+    <li>Email: {{ user.email }}</li>
+  </ul>
+
+  {% if payment.book %}
+    <p><strong>Book Details:</strong></p>
+    <ul>
+      <li>Book Title: {{ book.title }}</li>
+      <li>Book Author: {{ book.author.name }}</li>
+      <li>Book Price: ₹{{ book.price }}</li>
+    </ul>
+  {% endif %}
+
+  {% if payment.delivery_address %}
+    <p><strong>Delivery Address:</strong></p>
+    <p>{{ payment.delivery_address }}</p>
+  {% endif %}
+{% endblock %}

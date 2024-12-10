@@ -14,6 +14,13 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from .models import Membership, UserMembership, Payment, Book
 
+# views.py
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Payment, Book
+from .forms import PaymentForm  # A form to handle payment input if required
+
 
 def landing_page(request):
     return render(request, "landing_page.html")
@@ -323,12 +330,15 @@ def is_student(user):
 @user_passes_test(is_student)
 def student_dashboard(request):
     """
-    Student dashboard showing books, membership plans, and purchased membership details.
+    Student dashboard showing books, membership plans, purchased membership details, and payment history.
     """
     user = request.user
     user_membership = UserMembership.objects.filter(user=user).first()  # Fetch user's active membership
     memberships = Membership.objects.all()  # All available membership plans
     books = Book.objects.all()  # All books in the system
+
+    # Fetch the payment history for the user
+    payments = Payment.objects.filter(user=user)  # Assuming you have a Payment model
 
     # Restrict book access based on membership plan
     if user_membership:
@@ -341,6 +351,7 @@ def student_dashboard(request):
         'user_membership': user_membership,
         'memberships': memberships,
         'books': books,
+        'payments': payments,  # Add payment history to the context
     }
     return render(request, 'student_dashboard.html', context)
 
@@ -525,3 +536,86 @@ def user_list(request):
         students = students.filter(username__icontains=query) | students.filter(email__icontains=query) | students.filter(first_name__icontains=query)
 
     return render(request, 'user_list.html', {'users': students, 'query': query})
+
+
+
+
+@login_required
+def make_payment(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    
+    if request.method == 'POST':
+        payment_method = request.POST.get('payment_method')
+        if payment_method not in ['Card', 'UPI']:
+            messages.error(request, "Invalid payment method.")
+            return redirect('make_payment', book_id=book_id)
+        
+        # Create Payment object
+        payment = Payment.objects.create(
+            user=request.user,
+            amount=book.price,
+            payment_type='Purchase',
+            payment_method=payment_method,
+            book=book,
+            delivery_address=request.POST.get('delivery_address') if request.POST.get('delivery_address') else None,
+        )
+
+        # Redirect to invoice page
+        messages.success(request, "Payment successful!")
+        return redirect('invoice', payment_id=payment.id)
+
+    return render(request, 'payment/make_payment.html', {'book': book})
+
+# views.py
+@login_required
+def invoice(request, payment_id):
+    payment = get_object_or_404(Payment, id=payment_id)
+    
+    context = {
+        'payment': payment,
+        'user': payment.user,
+        'book': payment.book,
+    }
+    return render(request, 'payment/invoice.html', context)
+
+@login_required
+def payment_history(request):
+    # Get all payments made by the current user
+    payments = Payment.objects.filter(user=request.user)
+
+    context = {
+        'payments': payments
+    }
+    return render(request, 'payment/payment_history.html', context)
+
+# views.py
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Payment, Membership, Book
+from .forms import PaymentForm  # Use a Payment form if required
+
+@login_required
+def take_membership(request, membership_id):
+    membership = get_object_or_404(Membership, id=membership_id)
+    amount = membership.price  # Calculate membership price based on plan
+
+    if request.method == 'POST':
+        payment_method = request.POST.get('payment_method')
+        if payment_method not in ['Card', 'UPI']:
+            messages.error(request, "Invalid payment method.")
+            return redirect('take_membership', membership_id=membership.id)
+        
+        # Create Payment object for Membership
+        payment = Payment.objects.create(
+            user=request.user,
+            amount=amount,
+            payment_type='Membership',
+            payment_method=payment_method,
+        )
+
+        # Redirect to invoice page
+        messages.success(request, "Membership payment successful!")
+        return redirect('invoice', payment_id=payment.id)
+
+    return render(request, 'payment/make_payment.html', {'membership': membership})

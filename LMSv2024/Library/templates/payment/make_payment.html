@@ -1,0 +1,25 @@
+<!-- make_payment.html -->
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Payment for {{ book.title }}</h2>
+  <p>Amount: ₹{{ book.price }}</p>
+
+  <form method="POST">
+    {% csrf_token %}
+    <div>
+      <label for="payment_method">Payment Method:</label>
+      <select name="payment_method" id="payment_method">
+        <option value="Card">Card</option>
+        <option value="UPI">UPI</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="delivery_address">Delivery Address (if applicable):</label>
+      <textarea name="delivery_address" id="delivery_address"></textarea>
+    </div>
+
+    <button type="submit">Pay Now</button>
+  </form>
+{% endblock %}

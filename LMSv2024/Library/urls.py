@@ -42,4 +42,9 @@ urlpatterns = [
     #for displaying users list
     path("users/", views.user_list, name="user_list"),
 
+    #payment
+    path('make-payment/<int:book_id>/', views.make_payment, name='make_payment'),
+    path('invoice/<int:payment_id>/', views.invoice, name='invoice'),
+    path('payment-history/', views.payment_history, name='payment_history'),
+
 ]

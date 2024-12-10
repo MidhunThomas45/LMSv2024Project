@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <style>
+        /* Fix for the topbar covering content */
+        body {
+            padding-top: 50px; /* Adjust this value based on your topbar height */
+        }
+
+        /* Styling for square cards */
+        .card {
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Ensure proper spacing between rows */
+        .row {
+            margin-bottom: 20px;
+        }
+    </style>
+
+    <h1 class="text-center mt-4">Payment History</h1>
+
+    {% if payments %}
+        <div class="row mt-4 justify-content-center">
+            {% for payment in payments %}
+                <div class="col-md-3 mb-4">
+                    <div class="card text-center shadow">
+                        <div class="card-body">
+                            
+                            <p><strong>Amount:</strong> ₹{{ payment.amount }}</p>
+                            <p><strong>Payment Type:</strong> {{ payment.payment_type }}</p>
+                            <p><strong>Payment Date:</strong> {{ payment.payment_date }}</p>
+                            {% if payment.book %}
+                                <p><strong>Book:</strong> {{ payment.book.title }}</p>
+                                <p><strong>Book Author:</strong> {{ payment.book.author.name }}</p>
+                            {% endif %}
+                            {% if payment.delivery_address %}
+                                <p><strong>Delivery Address:</strong> {{ payment.delivery_address }}</p>
+                            {% endif %}
+                            <a href="{% url 'invoice' payment.id %}" class="btn btn-info">View Invoice</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center">No payment history found.</p>
+    {% endif %}
+{% endblock %}
