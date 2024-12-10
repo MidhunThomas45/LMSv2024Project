@@ -32,6 +32,39 @@
 <div class="container mt-4">
     <h1 class="text-center">Student Dashboard</h1>
 
+    <!-- Display success or error messages -->
+    {% if messages %}
+        <div class="mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Membership Details -->
+    {% if user_membership %}
+        <div class="mt-4">
+            <h3>Your Membership Details:</h3>
+            <ul>
+                <li><strong>Plan:</strong> {{ user_membership.membership.name }}</li>
+                <li><strong>Access Percentage:</strong> {{ user_membership.membership.book_access_percentage }}%</li>
+                <li><strong>Start Date:</strong> {{ user_membership.start_date }}</li>
+                <li><strong>End Date:</strong> {{ user_membership.end_date }}</li>
+            </ul>
+            <p class="text-muted">
+                You can access {{ user_membership.membership.book_access_percentage }}% of the books in our collection.
+            </p>
+        </div>
+    {% else %}
+        <div class="mt-4">
+            <h3>No Active Membership</h3>
+            <p>You can take a membership plan by clicking the "Membership" option below.</p>
+        </div>
+    {% endif %}
+
     <!-- Flexbox Square Cards -->
     <div class="row mt-5 justify-content-center">
         <!-- Books -->
@@ -51,7 +84,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Membership</h5>
                     <p class="card-text">View membership plans and check details of your subscription.</p>
-                    <a href="{% url 'my_membership' membership.id %}" class="btn btn-success">Membership Plans</a>
+                    <a href="{% url 'take_membership' membership_id=1 %}" class="btn btn-success">View Memberships</a>
                 </div>
             </div>
         </div>

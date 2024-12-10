@@ -1,40 +1,9 @@
-{% extends "base.html" %}
+<h1>Purchase Membership</h1>
+<p>Membership Plan: {{ membership.name }}</p>
+<p>Price: ${{ membership.price_per_month }}</p>
+<p>Book Access: {{ membership.book_access_percentage }}%</p>
 
-{% block content %}
-<div class="container mt-5">
-    <h2 class="text-center">Membership Payment</h2>
-    <div class="card mt-4 shadow">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Selected Membership Plan: {{ membership.name }}</h4>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <!-- Plan Details Section -->
-                <div class="col-md-6">
-                    <h5>Plan Details</h5>
-                    <ul class="list-unstyled">
-                        <li><strong>Price:</strong> ${{ membership.price_per_month }}</li>
-                        <li><strong>Books Access:</strong> {{ membership.book_access_percentage }}% of catalog</li>
-                        <li><strong>Description:</strong> {{ membership.description }}</li>
-                    </ul>
-                </div>
-                <!-- Payment Confirmation Section -->
-                <div class="col-md-6 text-center">
-                    <h5>Confirm Your Payment</h5>
-                    <p class="text-muted">By confirming, your membership will be activated immediately.</p>
-                    <form method="post" action="">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-success btn-lg">
-                            Pay ${{ membership.price_per_month }}
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Back to Dashboard Link -->
-    <div class="text-center mt-4">
-        <a href="{% url 'student_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
-    </div>
-</div>
-{% endblock %}
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit">Purchase Membership</button>
+</form>

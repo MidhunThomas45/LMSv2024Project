@@ -2,7 +2,8 @@ from django import forms
 from .models import User, Book, Author, Category, ISBN, Payment, Purchase
 from django.core.exceptions import ValidationError
 import re
-
+from django import forms
+from .models import Membership
 
 
 class UserRegistratioForm(forms.ModelForm):
@@ -65,3 +66,15 @@ class PurchaseForm(forms.ModelForm):
     class Meta:
         model = Purchase
         fields = ['delivery_address']  # Capture delivery address for book purchase
+
+
+
+class MembershipForm(forms.ModelForm):
+    class Meta:
+        model = Membership
+        fields = ['name', 'price_per_month', 'book_access_percentage']
+        widgets = {
+            'name': forms.Select(choices=Membership.MEMBERSHIP_CHOICES),
+            'price_per_month': forms.NumberInput(attrs={'class': 'form-control'}),
+            'book_access_percentage': forms.NumberInput(attrs={'class': 'form-control'}),
+        }

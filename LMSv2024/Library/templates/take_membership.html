@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Purchase Membership</h2>
+
+    <!-- Membership Details -->
+    <div class="membership-details">
+        <h3>Plan: {{ membership.name }}</h3>
+        <p><strong>Price:</strong> ₹{{ membership.price_per_month }} per month</p>
+        <p><strong>Book Access:</strong> {{ membership.book_access_percentage }}%</p>
+    </div>
+
+    <!-- Payment Form -->
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="payment_method">Select Payment Method:</label><br>
+            <input type="radio" id="card" name="payment_method" value="Card" required>
+            <label for="card">Card</label><br>
+            <input type="radio" id="upi" name="payment_method" value="UPI" required>
+            <label for="upi">UPI</label><br><br>
+        </div>
+        <button type="submit" class="btn btn-primary">Pay Now</button>
+    </form>
+</div>
+{% endblock %}

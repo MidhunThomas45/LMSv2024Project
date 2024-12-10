@@ -11,3 +11,5 @@ admin.site.register(ISBN)
 admin.site.register(Language)
 admin.site.register(IssuedBook)
 admin.site.register(Payment)
+
+

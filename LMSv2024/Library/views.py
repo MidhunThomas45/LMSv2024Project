@@ -9,7 +9,10 @@ from datetime import date, timedelta, timezone
 
 from .forms import UserRegistratioForm, BookForm, AuthorForm, CategoryForm, PaymentForm
 from .models import ISBN, Language, Membership, Author, Category, Book, IssuedBook, Rent, Purchase, Payment, UserMembership
-
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib import messages
+from .models import Membership, UserMembership, Payment, Book
 
 
 def landing_page(request):
@@ -19,8 +22,7 @@ def landing_page(request):
 def is_librarian(user):
     return user.groups.filter(name='Librarian').exists()
 
-def is_student(user):
-    return user.groups.filter(name='Student').exists()
+
 
 ### ---------- User Registration and Authentication Views ---------- ###
 
@@ -309,80 +311,96 @@ def delete_book(request, book_id):
         return redirect('manage_books')
     return render(request, 'book_operations/delete_book.html', {'book': book})
 
-#users list
-def user_list(request):
-    query = request.GET.get('q')
-    students_group = Group.objects.get(name='Student')
-    students = User.objects.filter(groups=students_group)
 
-    if query:
-        students = students.filter(username__icontains=query) | students.filter(email__icontains=query) | students.filter(first_name__icontains=query)
 
-    return render(request, 'user_list.html', {'users': students, 'query': query})
+
+
+# Helper function to check if the user is a student
+def is_student(user):
+    return user.groups.filter(name='Student').exists()
 
 @login_required
+@user_passes_test(is_student)
 def student_dashboard(request):
     """
-    View for the student dashboard after login.
-    Displays books, membership plans, and profile details based on user's membership status.
+    Student dashboard showing books, membership plans, and purchased membership details.
     """
     user = request.user
-    membership = user.usermembership_set.first()  # Get the first membership associated with the user
+    user_membership = UserMembership.objects.filter(user=user).first()  # Fetch user's active membership
+    memberships = Membership.objects.all()  # All available membership plans
+    books = Book.objects.all()  # All books in the system
 
-    # Get all books
-    books = Book.objects.all()
-
-    # Get all membership plans
-    memberships = Membership.objects.all()
+    # Restrict book access based on membership plan
+    if user_membership:
+        access_percentage = user_membership.membership.book_access_percentage  # Fetch access limit percentage
+        total_books = books.count()
+        access_limit = int(total_books * (access_percentage / 100))  # Calculate the number of books user can access
+        books = books[:access_limit]  # Restrict books to the calculated limit
 
     context = {
-        'user': user,
-        'membership': membership,
-        'books': books,
+        'user_membership': user_membership,
         'memberships': memberships,
+        'books': books,
     }
     return render(request, 'student_dashboard.html', context)
 
-
 @login_required
-def my_membership(request, membership_id):
+@user_passes_test(is_student)
+def take_membership(request, membership_id):
     """
-    View to handle membership payment and subscription.
+    Select a membership plan and proceed to the payment page.
     """
-    # Get the selected membership plan
     membership = get_object_or_404(Membership, id=membership_id)
 
     if request.method == 'POST':
-        # Record the payment
-        Payment.objects.create(
+        payment_method = request.POST.get('payment_method')
+
+        if payment_method not in ['Card', 'UPI']:
+            messages.error(request, "Invalid payment method selected.")
+            return redirect('take_membership', membership_id=membership_id)
+
+        # Record payment
+        payment = Payment.objects.create(
             user=request.user,
             amount=membership.price_per_month,
-            payment_date=date.today(),
-            payment_type='MEMBERSHIP',
+            payment_type='Membership',
+            payment_method=payment_method,
         )
 
-        # Calculate the start date and end date (one month from today)
+        # Update or create UserMembership
         start_date = date.today()
         end_date = start_date + timedelta(days=30)
-
-        # Create or update the UserMembership
-        user_membership, created = UserMembership.objects.update_or_create(
+        UserMembership.objects.update_or_create(
             user=request.user,
-            membership=membership,
             defaults={
+                'membership': membership,
                 'start_date': start_date,
                 'end_date': end_date,
-            },
+                'payment': payment,
+            }
         )
 
-        # Redirect the user to the student dashboard after successful payment
+        messages.success(request, "Membership purchased successfully!")
         return redirect('student_dashboard')
 
-    # Render the membership payment page with membership details
-    context = {
-        'membership': membership,
-    }
-    return render(request, 'student/my_membership.html', context)
+    return render(request, 'take_membership.html', {'membership': membership})
+
+
+# Librarian-only view to manage memberships
+@login_required
+@user_passes_test(lambda user: user.groups.filter(name='Librarian').exists())
+def manage_memberships(request):
+    memberships = Membership.objects.all()
+
+    if request.method == "POST":
+        name = request.POST.get("name")
+        price = request.POST.get("price")
+        percentage = request.POST.get("percentage")
+        Membership.objects.create(name=name, price_per_month=price, book_access_percentage=percentage)
+        messages.success(request, "Membership added successfully!")
+        return redirect("manage_memberships")
+
+    return render(request, "manage_memberships.html", {"memberships": memberships})
 
 
 
@@ -466,7 +484,7 @@ def purchase_list(request):
     """
     purchases = Purchase.objects.filter(user=request.user)
     context = {'purchases': purchases}
-    return render(request, 'student/purchased_list.html', context)
+    return render(request, 'student/purchased_books.html', context)
 
 
 
@@ -497,4 +515,13 @@ def create_payment(user: User, amount: float, payment_type: str):
     return payment
 
 
+#users list
+def user_list(request):
+    query = request.GET.get('q')
+    students_group = Group.objects.get(name='Student')
+    students = User.objects.filter(groups=students_group)
 
+    if query:
+        students = students.filter(username__icontains=query) | students.filter(email__icontains=query) | students.filter(first_name__icontains=query)
+
+    return render(request, 'user_list.html', {'users': students, 'query': query})

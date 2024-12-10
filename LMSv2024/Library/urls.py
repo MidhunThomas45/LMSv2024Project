@@ -31,9 +31,9 @@ urlpatterns = [
 
 
     # Membership URLs (if required)
-    path("memberships/", views.manage_memberships, name="manage_memberships"),  # Manage memberships
-    path('student-dashboard/', views.student_dashboard, name='student_dashboard'),
-    path('membership/payment/<int:membership_id>/', views.my_membership, name='my_membership'),
+     path('student-dashboard/', views.student_dashboard, name='student_dashboard'),
+    path('membership/take/<int:membership_id>/', views.take_membership, name='take_membership'),
+    path("memberships/", views.manage_memberships, name="manage_memberships"),
     path('available-books/', views.available_books, name='available_books'),
     path('rent-book/<int:book_id>/', views.rent_book, name='rent_book'),
     path('purchase-book/<int:book_id>/', views.purchase_book, name='purchase_book'),
