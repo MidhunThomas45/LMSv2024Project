@@ -1,28 +1,35 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="container mt-5">
-    <h2>Purchase Membership</h2>
+<div class="container">
+    <h2 class="my-4">Take Membership</h2>
 
-    <!-- Membership Details -->
-    <div class="membership-details">
-        <h3>Plan: {{ membership.name }}</h3>
-        <p><strong>Price:</strong> ₹{{ membership.price_per_month }} per month</p>
-        <p><strong>Book Access:</strong> {{ membership.book_access_percentage }}%</p>
+    {% if active_membership %}
+    <div class="alert alert-info">
+        <p><strong>Current Membership:</strong> {{ active_membership.membership.name }}</p>
+        <p><strong>Valid until:</strong> {{ active_membership.end_date }}</p>
     </div>
+    {% endif %}
 
-    <!-- Payment Form -->
-    <form method="POST">
-        
+    <form method="POST" action="{% url 'make_payment' %}" class="mt-4">
         {% csrf_token %}
         <div class="form-group">
-            <label for="payment_method">Select Payment Method:</label><br>
-            <input type="radio" id="card" name="payment_method" value="Card" required>
-            <label for="card">Card</label><br>
-            <input type="radio" id="upi" name="payment_method" value="UPI" required>
-            <label for="upi">UPI</label><br><br>
+            <label for="membership"><strong>Choose a Membership Plan:</strong></label>
+            <select name="membership_id" id="membership" class="form-control" required>
+                <option value="" disabled selected>-- Select a Membership Plan --</option>
+                {% for membership in memberships %}
+                <option value="{{ membership.id }}">
+                    {{ membership.name }} - ${{ membership.price_per_month }} per month
+                </option>
+                {% endfor %}
+            </select>
         </div>
-        <button type="submit" class="btn btn-primary">Pay Now</button>
+
+        <div class="form-group mt-3">
+            <label for="start_date"><strong>Start Date:</strong></label>
+            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ today_date }}" readonly>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Proceed to Payment</button>
     </form>
 </div>
 {% endblock %}

@@ -355,46 +355,47 @@ def student_dashboard(request):
     }
     return render(request, 'student_dashboard.html', context)
 
+
 @login_required
 @user_passes_test(is_student)
 def take_membership(request, membership_id):
-    """
-    Select a membership plan and proceed to the payment page.
-    """
+    # Get the membership plan using its ID
     membership = get_object_or_404(Membership, id=membership_id)
 
-    if request.method == 'POST':
-        payment_method = request.POST.get('payment_method')
+    # Retrieve the price of the membership plan
+    amount = membership.price_per_month
 
-        if payment_method not in ['Card', 'UPI']:
-            messages.error(request, "Invalid payment method selected.")
-            return redirect('take_membership', membership_id=membership_id)
+    # Create a payment record
+    payment = Payment.objects.create(
+        user=request.user,
+        amount=amount,
+        payment_type="Membership",
+        payment_method="Card"  # Default payment method; can be dynamic based on user input
+    )
 
-        # Record payment
-        payment = Payment.objects.create(
-            user=request.user,
-            amount=membership.price_per_month,
-            payment_type='Membership',
-            payment_method=payment_method,
-        )
+    # Calculate membership duration (e.g., 30 days for one month)
+    start_date = date.today()
+    end_date = start_date + timedelta(days=30)
 
-        # Update or create UserMembership
-        start_date = date.today()
-        end_date = start_date + timedelta(days=30)
-        UserMembership.objects.update_or_create(
-            user=request.user,
-            defaults={
-                'membership': membership,
-                'start_date': start_date,
-                'end_date': end_date,
-                'payment': payment,
-            }
-        )
+    # Create or update the user's membership
+    user_membership, created = UserMembership.objects.update_or_create(
+        user=request.user,
+        defaults={
+            "membership": membership,
+            "start_date": start_date,
+            "end_date": end_date,
+            "payment": payment,
+        },
+    )
 
-        messages.success(request, "Membership purchased successfully!")
-        return redirect('student_dashboard')
+    # Show success message
+    if created:
+        messages.success(request, f"You have successfully subscribed to the {membership.name} plan.")
+    else:
+        messages.info(request, f"Your {membership.name} membership has been updated.")
 
-    return render(request, 'take_membership.html', {'membership': membership})
+    # Redirect to a success page or membership dashboard
+    return redirect("membership_dashboard")  # Replace with the actual URL name for your membership dashboard
 
 
 # Librarian-only view to manage memberships
@@ -598,7 +599,7 @@ from .forms import PaymentForm  # Use a Payment form if required
 @login_required
 def take_membership(request, membership_id):
     membership = get_object_or_404(Membership, id=membership_id)
-    amount = membership.price  # Calculate membership price based on plan
+    amount = membership.price_per_month  # Calculate membership price based on plan
 
     if request.method == 'POST':
         payment_method = request.POST.get('payment_method')
@@ -618,4 +619,4 @@ def take_membership(request, membership_id):
         messages.success(request, "Membership payment successful!")
         return redirect('invoice', payment_id=payment.id)
 
-    return render(request, 'payment/make_payment.html', {'membership': membership})
+    return render(request, 'take_membership.html', {'membership': membership})
