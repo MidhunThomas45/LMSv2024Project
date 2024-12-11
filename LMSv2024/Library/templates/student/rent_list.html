@@ -91,7 +91,7 @@
                     <td>{{ rent.end_date|date:"d M, Y" }}</td>
                     <td>
                         <!-- Button to Read the Book -->
-                        <a href="{% url 'read_book' rent.book.id %}" class="read-button">Read Book</a>
+                        <a href="{% url 'read_book' rent.user.id %}" class="read-button">Read Book</a>
                     </td>
                 </tr>
                 {% empty %}
