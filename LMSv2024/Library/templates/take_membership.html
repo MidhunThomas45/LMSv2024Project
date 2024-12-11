@@ -1,35 +1,105 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="container">
-    <h2 class="my-4">Take Membership</h2>
+<style>
+    /* Container background and padding */
+.container {
+    padding: 2rem;
+    background-color: #f8f9fa; /* Light gray background */
+    border-radius: 15px;
+}
 
-    {% if active_membership %}
-    <div class="alert alert-info">
-        <p><strong>Current Membership:</strong> {{ active_membership.membership.name }}</p>
-        <p><strong>Valid until:</strong> {{ active_membership.end_date }}</p>
+/* Card styling */
+.card {
+    border-width: 2px;
+    border-radius: 15px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    background-color: #ffffff;
+}
+
+/* Hover effect for cards */
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Card titles */
+.card-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+/* Custom button styling */
+.btn {
+    font-weight: bold;
+    border-radius: 30px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Button hover effect */
+.btn:hover {
+    background-color: #333 !important;
+    color: #fff !important;
+}
+
+/* Add margin to the icon */
+.card-text strong {
+    font-size: 1.1rem;
+}
+
+/* Additional spacing */
+.mt-5 {
+    margin-top: 3rem;
+}
+
+.mb-5 {
+    margin-bottom: 3rem;
+}
+
+/* Add subtle animation to the heading */
+h1 {
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Keyframes for heading animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+</style>
+<div class="container mt-5">
+    <br>
+    {%if user_membership%}
+    <p>You already have a membership plan {{user_membership}}. </p>
+    {%else%}
+    <h1 class="text-center mb-5 display-4 text-primary">Choose Your Membership Plan</h1>
+    
+    <div class="row justify-content-center">
+        {% for membership in memberships %}
+        <div class="col-md-4 mb-4">
+            <div class="card border-{{ membership.card_color }} shadow-lg h-100">
+                <div class="card-body text-center">
+                    <h2 class="card-title text-{{ membership.card_color }} mb-4">{{ membership.name }} Membership</h2>
+                    <p class="card-text">
+                        <strong>📚 Book Access:</strong> <span class="d-block my-2">{{ membership.book_access_percentage }}% of the total books</span>
+                        <strong>💰 Price:</strong> <span class="d-block my-2">${{ membership.price_per_month }}/month</span>
+                    </p>
+                    <a href="{% url 'membership_payment' membership_id=membership.id %}" class="btn btn-{{ membership.card_color }} btn-lg mt-3">
+                        Select {{ membership.name }}
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
     </div>
-    {% endif %}
-
-    <form method="POST" action="{% url 'make_payment' %}" class="mt-4">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="membership"><strong>Choose a Membership Plan:</strong></label>
-            <select name="membership_id" id="membership" class="form-control" required>
-                <option value="" disabled selected>-- Select a Membership Plan --</option>
-                {% for membership in memberships %}
-                <option value="{{ membership.id }}">
-                    {{ membership.name }} - ${{ membership.price_per_month }} per month
-                </option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="form-group mt-3">
-            <label for="start_date"><strong>Start Date:</strong></label>
-            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ today_date }}" readonly>
-        </div>
-
-        <button type="submit" class="btn btn-primary mt-3">Proceed to Payment</button>
-    </form>
+    {%endif%}
 </div>
 {% endblock %}

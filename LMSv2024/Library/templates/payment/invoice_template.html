@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .invoice-details {
+            margin: 0 auto;
+            max-width: 600px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-header">
+        <h1>Invoice</h1>
+        <p><strong>Transaction ID:</strong> {{ payment.id }}</p>
+    </div>
+
+    <div class="invoice-details">
+        <p><strong>Payment Date:</strong> {{ payment.payment_date }}</p>
+        <p><strong>User Name:</strong> {{ payment.user.first_name }} {{ payment.user.last_name }}</p>
+        <p><strong>User Email:</strong> {{ payment.user.email }}</p>
+        <p><strong>Membership Plan:</strong> {{ membership.name }}</p>
+        <p><strong>Access Percentage:</strong> {{ membership.book_access_percentage }}%</p>
+        <p><strong>Amount Paid:</strong> ${{ payment.amount }}</p>
+        <p><strong>Payment Method:</strong> {{ payment.payment_method }}</p>
+    </div>
+
+    <div class="footer">
+        <p>Thank you for your payment!</p>
+    </div>
+</body>
+</html>

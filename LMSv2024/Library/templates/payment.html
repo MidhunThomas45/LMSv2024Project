@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Membership Payment</h2>
+
+    <p><strong>Membership Plan:</strong> {{ membership.name }}</p>
+    <p><strong>Price per Month:</strong> ${{ membership.price_per_month }}</p>
+    <p><strong>Description:</strong> {{ membership.book_access_percentage }}% of books available.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- Payment Options -->
+        <div class="form-group">
+            <label for="payment_method">Choose Payment Method:</label>
+            <select id="payment_method" name="payment_method" class="form-control" required>
+                <option value="" disabled selected>Select a payment method</option>
+                <option value="Card">Credit Card</option>
+                <option value="UPI">UPI</option>
+            </select>
+        </div>
+
+        <!-- Card Payment Fields -->
+        <div id="card_fields" class="d-none">
+            <div class="form-group">
+                <label for="card_number">Card Number:</label>
+                <input type="text" id="card_number" name="card_number" class="form-control" placeholder="Enter your card number">
+            </div>
+            <div class="form-group">
+                <label for="cvv">CVV:</label>
+                <input type="text" id="cvv" name="cvv" class="form-control" placeholder="Enter your CVV">
+            </div>
+            <div class="form-group">
+                <label for="account_holder">Account Holder Name:</label>
+                <input type="text" id="account_holder" name="account_holder" class="form-control" placeholder="Enter account holder's name">
+            </div>
+            <div class="form-group">
+                <label for="ifsc">IFSC Code:</label>
+                <input type="text" id="ifsc" name="ifsc" class="form-control" placeholder="Enter IFSC code">
+            </div>
+        </div>
+
+        <!-- UPI Payment Fields -->
+        <div id="upi_fields" class="d-none">
+            <div class="form-group">
+                <label for="upi_phone">Phone Number:</label>
+                <input type="text" id="upi_phone" name="upi_phone" class="form-control" placeholder="Enter your phone number">
+            </div>
+            <div class="form-group">
+                <label for="upi_id">UPI ID:</label>
+                <input type="text" id="upi_id" name="upi_id" class="form-control" placeholder="Enter your UPI ID">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success mt-3">Proceed to Payment</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const paymentMethodSelect = document.getElementById("payment_method");
+        const cardFields = document.getElementById("card_fields");
+        const upiFields = document.getElementById("upi_fields");
+
+        paymentMethodSelect.addEventListener("change", function () {
+            const selectedMethod = paymentMethodSelect.value;
+
+            if (selectedMethod === "Card") {
+                cardFields.classList.remove("d-none");
+                upiFields.classList.add("d-none");
+            } else if (selectedMethod === "UPI") {
+                upiFields.classList.remove("d-none");
+                cardFields.classList.add("d-none");
+            } else {
+                cardFields.classList.add("d-none");
+                upiFields.classList.add("d-none");
+            }
+        });
+    });
+</script>
+{% endblock %}

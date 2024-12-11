@@ -45,25 +45,31 @@
     {% endif %}
 
     <!-- Membership Details -->
+<div class="mt-4">
+    <h3>Your Membership Details:</h3>
+
+    <!-- Display Student ID and Name -->
+    <ul>
+        <li><strong>Student Name:</strong> {{ user.first_name }}</li>
+    </ul>
     {% if user_membership %}
-        <div class="mt-4">
-            <h3>Your Membership Details:</h3>
-            <ul>
-                <li><strong>Plan:</strong> {{ user_membership.membership.name }}</li>
-                <li><strong>Access Percentage:</strong> {{ user_membership.membership.book_access_percentage }}%</li>
-                <li><strong>Start Date:</strong> {{ user_membership.start_date }}</li>
-                <li><strong>End Date:</strong> {{ user_membership.end_date }}</li>
-            </ul>
-            <p class="text-muted">
-                You can access {{ user_membership.membership.book_access_percentage }}% of the books in our collection.
-            </p>
-        </div>
+        <ul>
+            <li><strong>Plan:</strong> {{ user_membership.membership.name }}</li>
+            <li><strong>Access Percentage:</strong> {{ user_membership.membership.book_access_percentage }}%</li>
+            <li><strong>Start Date:</strong> {{ user_membership.start_date }}</li>
+            <li><strong>End Date:</strong> {{ user_membership.end_date }}</li>
+        </ul>
+        <p class="text-muted">
+            You can access {{ user_membership.membership.book_access_percentage }}% of the books in our collection.
+        </p>
     {% else %}
         <div class="mt-4">
             <h3>No Active Membership</h3>
             <p>You can take a membership plan by clicking the "Membership" option below.</p>
         </div>
     {% endif %}
+</div>
+
 
     <!-- Flexbox Square Cards -->
     <div class="row mt-5 justify-content-center">
@@ -71,8 +77,8 @@
         <div class="col-md-3 mb-4">
             <div class="card text-center shadow">
                 <div class="card-body">
-                    <h5 class="card-title">Books</h5>
-                    <p class="card-text">Explore books by category and read after membership.</p>
+                    <h5 class="card-title">Books(rent or buy)</h5>
+                    <p class="card-text">Explore books after membership.</p>
                     <a href="{% url 'available_books' %}" class="btn btn-primary">View Books</a>
                 </div>
             </div>
