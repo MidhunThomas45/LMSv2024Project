@@ -1,61 +1,118 @@
-{% extends "base.html" %}
-
-{% block content %}
+<div class="header-container" style="margin-top: rem;">
+<h2 >Your Purchased Books</h2>
+</div>
 <style>
-    body {
-        background-color: #f8f9fa;
-        margin-top: 60px; /* Space for the top bar */
-    }
-    .container {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    h1 {
+    /* Overall page style */
+    h2 {
+        text-align: center;
         font-size: 2rem;
-        font-weight: bold;
-        color: #343a40;
         margin-bottom: 20px;
     }
-    .table th {
-        background-color: #343a40;
-        color: white;
-        text-align: center;
-    }
-    .table td {
-        text-align: center;
-        vertical-align: middle;
-    }
-    .table-striped tbody tr:nth-of-type(odd) {
+
+    /* Container for the purchases list */
+    .purchases-list {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 10px;
         background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+
+    /* List of purchased books */
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    /* Individual item in the list */
+    .purchase-item {
+        background-color: #fff;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Hover effect for each purchase item */
+    .purchase-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Book details styling */
+    .book-details {
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    /* Style for book title */
+    .book-title {
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* Style for price */
+    .purchase-price {
+        color: #2b8a3e;
+    }
+
+    /* Style for payment method */
+    .payment-method {
+        font-style: italic;
+        color: #888;
+    }
+
+    /* Style for delivery address */
+    .delivery-address {
+        color: #555;
+    }
+
+    /* No purchases message */
+    p {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #ff6347;
+    }
+
+    /* Style for the "Read" button */
+    .read-btn {
+        display: inline-block;
+        background-color: #007bff;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 5px;
+        text-decoration: none;
+        margin-top: 10px;
+        font-size: 1rem;
+        transition: background-color 0.3s;
+    }
+
+    /* Hover effect for the "Read" button */
+    .read-btn:hover {
+        background-color: #0056b3;
+    }
+
 </style>
 
-<div class="container mt-4">
-    <h1 class="text-center">Purchased Books</h1>
-
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Purchase Date</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for purchase in purchased_books %}
-            <tr>
-                <td>{{ purchase.book.title }}</td>
-                <td>{{ purchase.purchase_date|date:"d M, Y" }}</td>
-                <td>${{ purchase.purchase_price }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="3" class="text-center">No purchased books found.</td>
-            </tr>
+{% if purchases %}
+    <div class="purchases-list">
+        <ul>
+            {% for purchase in purchases %}
+                <li class="purchase-item">
+                    <div class="book-details">
+                        <strong>Book Title:</strong> <span class="book-title">{{ purchase.book.title }}</span> <br>
+                        <strong>Purchased On:</strong> <span class="purchase-date">{{ purchase.purchase_date }}</span> <br>
+                        <strong>Price:</strong> $<span class="purchase-price">{{ purchase.purchase_price }}</span> <br>
+                        <strong>Payment Method:</strong> <span class="payment-method">{{ purchase.payment.payment_method }}</span> <br>
+                    </div>
+                    <!-- "Read" button for each book -->
+                    <a href="{% url 'read_book_purchase' book_id=purchase.book.id %}" class="read-btn">Read Book</a>
+                </li>
             {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% endblock %}
+        </ul>
+    </div>
+{% else %}
+    <p>You have not purchased any books yet.</p>
+{% endif %}

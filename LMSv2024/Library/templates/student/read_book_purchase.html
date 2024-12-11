@@ -1,0 +1,102 @@
+<h2 class="book-title">{{ book.title }}</h2>
+
+<div class="book-info">
+    <strong>Author:</strong> {{ book.author.name }} <br>
+    <strong>Category:</strong> {{ book.category.name }} <br>
+    <strong>Language:</strong> {{ book.language.name }} <br>
+    
+    <strong>Price:</strong> ${{ book.price }} <br>
+</div>
+
+<!-- Display the content of the book -->
+<div class="book-content">
+    
+    <p>{{ content }}</p>  <!-- Display the content from the ISBN model -->
+</div>
+
+<!-- Optionally, a button to go back to the purchased books list -->
+<a href="{% url 'purchased_books' %}" class="btn btn-secondary">Back to Purchased Books</a>
+
+<!-- Styling -->
+<style>
+    /* Title of the book */
+    .book-title {
+        text-align: center;
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    /* Book Information Section */
+    .book-info {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+
+    .book-info strong {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .book-info {
+        font-size: 1rem;
+        line-height: 1.8;
+    }
+
+    /* Book Content Section */
+    .book-content {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .book-content h3 {
+        font-size: 1.5rem;
+        color: #444;
+        margin-bottom: 15px;
+    }
+
+    .book-content p {
+        font-size: 1.2rem;
+        line-height: 1.6;
+        color: #555;
+    }
+
+    /* Button Styling */
+    .btn-secondary {
+        display: inline-block;
+        background-color: #6c757d;
+        color: #fff;
+        padding: 10px 15px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    /* Mobile-friendly Styling */
+    @media (max-width: 768px) {
+        .book-info, .book-content {
+            padding: 15px;
+        }
+
+        .book-title {
+            font-size: 1.5rem;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
