@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Available Books</h2>
+
+    <!-- Search Bar -->
+    <form method="get" action="{% url 'list_all_books' %}" class="mb-4">
+        <div class="input-group mx-auto" style="max-width: 600px;">
+            <input type="text" name="q" class="form-control rounded-pill" placeholder="Search by title, author, category, or language..." value="{{ query }}">
+            <button class="btn btn-primary rounded-pill" type="submit">Search</button>
+        </div>
+    </form>
+
+    {% if books %}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for book in books %}
+                <div class="col">
+                    <div class="card shadow-sm border-light">
+                        {% if book.book_image %}
+                            <img src="{{ book.book_image.url }}" class="card-img-top" alt="{{ book.title }}">
+                        {% else %}
+                            <img src="{% static 'images/default_book.png' %}" class="card-img-top" alt="Default Image">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ book.title }}</h5>
+                            <p class="card-text">
+                                <strong>Author:</strong> {{ book.author.name }}<br>
+                                <strong>Category:</strong> {{ book.category.name }}<br>
+                                <strong>Language:</strong> {{ book.language.name }}<br>
+                                <strong>Price:</strong> ${{ book.price }}<br>
+                                <strong>Quantity:</strong> {{ book.quantity }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center">No books found matching your search.</p>
+    {% endif %}
+
+    <!-- Back to Dashboard Button -->
+    <div class="text-center mt-4">
+        <a href="{% url 'student_dashboard' %}" class="btn btn-secondary rounded-pill px-4 py-2">Back to Dashboard</a>
+    </div>
+</div>
+
+<style>
+    /* Container Styling */
+    .container {
+        background-color: #f9f9f9; /* Light background for the container */
+        padding: 30px;
+        border-radius: 10px;
+    }
+
+    /* Search Bar Styling */
+    .input-group {
+        margin: 0 auto;
+    }
+
+    .form-control {
+        border-radius: 50px; /* Rounded corners for input field */
+        padding: 10px 20px; /* Adequate padding */
+    }
+
+    .btn-primary {
+        border-radius: 50px; /* Rounded corners for button */
+        padding: 10px 20px;
+        font-weight: 600;
+    }
+
+    /* Card Styling */
+    .card {
+        border-radius: 10px; /* Rounded corners for card */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .card-text {
+        font-size: 1rem;
+        color: #555;
+    }
+
+    .card-footer {
+        background-color: #f8f9fa;
+        border-top: 1px solid #ddd;
+    }
+
+    /* Back to Dashboard Button */
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        border-color: #545b62;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .input-group {
+            max-width: 100%;
+        }
+    }
+
+    /* Prevent navbar styles from being affected */
+    body {
+        padding-top: 56px;  /* Ensure content isn't hidden behind the navbar */
+    }
+</style>
+{% endblock %}

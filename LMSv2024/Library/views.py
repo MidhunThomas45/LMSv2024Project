@@ -845,18 +845,109 @@ def read_book(request, rent_id):
     View to provide access to the rented book content.
     
     """
-    try:
-        # Attempt to retrieve the Rent object for the current user and rent_id
-        rent = Rent.objects.get(id=rent_id, user=request.user)
-        
-        # Check if the rental period is still valid
-        if (rent.start_date + timedelta(days=30)) >= date.today():  # Ensure the rental period is valid
-            book_contents = rent.book.isbn.book_content  # Assuming book content is stored in the ISBN model
-            return render(request, 'book_operations/read_book.html', {'book': rent.book, 'book_content': book_contents})
-        else:
-            # Rental expired
-            return render(request, 'book_operations/rental_expired.html', {'book': rent.book})
+    rent = get_object_or_404(Rent, id=rent_id, user=request.user)
+    if rent.end_date >= date.today():  # Ensure the rental period is valid
+        book_content = rent.book.isbn.book_content  # Assuming book content is stored in the ISBN model
+        return render(request, 'book_operations/read_book.html', {'book': rent.book, 'book_content': book_content})
+    else:
+        return render(request, 'book_operations/rental_expired.html', {'book': rent.book})
+
+
+def buy_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+
+    # Process the purchase (this could include payment, order creation, etc.)
+    # For example, a simple confirmation message for now
+    # In a real implementation, you would add logic to create an order, process payment, etc.
     
-    except Rent.DoesNotExist:
-        # Handle the case where no Rent object was found for this user and rent_id
-        return render(request, 'book_operations/rent_not_found.html', {'rent_id': rent_id})
+    # Assuming you have an Order model and user authentication for purchase details
+    if request.user.is_authenticated:
+        # Example: Create an order for the user
+        # Order.objects.create(user=request.user, book=book, status='Purchased')
+        
+        # Redirect to a confirmation page or process payment
+        return redirect('purchase_confirmation', book_id=book.id)  # You can change the URL here
+
+    else:
+        # If the user is not authenticated, redirect to login
+        return redirect('login')
+    
+
+
+@login_required   
+def purchase_books(request):
+    # Fetch books available for purchase
+    books = Book.objects.all()  # Or use filters if needed (e.g., available or in stock)
+    return render(request, 'student/purchase_book.html', {'books': books})
+
+
+@login_required
+def payment_page(request, book_id):
+    """
+    View to handle payment for a book purchase.
+    """
+    # Retrieve the book
+    book = get_object_or_404(Book, id=book_id)
+
+    if request.method == 'POST':
+        # Get payment method from the form (default to 'Card' if not specified)
+        payment_method = request.POST.get('payment_method', 'Card')
+        
+        # Create a Payment entry in the Payment table
+        payment = Payment.objects.create(
+            user=request.user,
+            amount=book.price,
+            payment_type='Purchase',
+            payment_method=payment_method
+        )
+
+        # Create a Purchase entry and link it to the payment
+        Purchase.objects.create(
+            user=request.user,
+            book=book,
+            purchase_date=timezone.now(),
+            delivery_address='Default Address',  # Update this as needed
+            purchase_price=book.price,
+            payment=payment
+        )
+
+        # Redirect to the purchase confirmation page
+        return redirect('purchase_confirmation', book_id=book.id)
+
+    return render(request, 'student/payment_page.html', {'book': book})
+
+@login_required
+def purchase_confirmation(request, book_id):
+    """
+    View to show purchase confirmation message after a successful payment.
+    """
+    book = get_object_or_404(Book, id=book_id)
+    return render(request, 'student/purchase_confirmation.html', {'book': book})
+
+
+@login_required
+def purchase_list(request):
+    """
+    View to display the list of purchased books by the user.
+    """
+    purchases = Purchase.objects.filter(user=request.user)
+    context = {'purchases': purchases}
+    return render(request, 'student/purchased_books.html', context)
+
+
+@login_required
+def read_book_purchase(request, book_id):
+    """
+    View to display the content of a purchased book.
+    """
+    # Get the purchased book
+    book = get_object_or_404(Book, id=book_id)
+
+    # Get the ISBN object associated with the book
+    isbn = get_object_or_404(ISBN, id=book.isbn.id)  # Assuming 'isbn' is a ForeignKey in Book
+
+    # Retrieve the content of the book from the ISBN model
+    content = isbn.book_content
+    
+    # Pass the book and its content to the template
+    return render(request, 'student/read_book_purchase.html', {'book': book, 'content': content})

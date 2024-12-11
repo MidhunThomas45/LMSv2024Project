@@ -1,25 +1,26 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="text-center">Purchase {{ book.title }}</h1>
+    <div class="container" >
+        <div class="header-container" style="margin-top:6rem;">
+        <h2 class="text-center my-4">Purchase Books</h2>
+        </div>
+        <div class="row">
+            {% for book in books %}
+                <div class="col-md-3 mb-4">
+                    <div class="card">
+                        <img src="{{ book.book_image.url }}" class="card-img-top" alt="{{ book.title }}">
 
-    <div class="card mt-4">
-        <div class="card-body">
-            <h4>Book Details</h4>
-            <p><strong>Title:</strong> {{ book.title }}</p>
-            <p><strong>Author:</strong> {{ book.author.name }}</p>
-            <p><strong>Price:</strong> ${{ book.price }}</p>
-
-            <form method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="address">Delivery Address:</label>
-                    <textarea name="address" id="address" class="form-control" rows="3" required></textarea>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ book.title }}</h5>
+                            <p class="card-text">{{ book.description }}</p>
+                            <p class="card-text"><strong>Price: ${{ book.price }}</strong></p>
+                            <!-- Change the button to go to the payment page -->
+                            <a href="{% url 'payment_page' book.id %}" class="btn btn-success">Buy</a>
+                        </div>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">Purchase</button>
-            </form>
+            {% endfor %}
         </div>
     </div>
-</div>
 {% endblock %}

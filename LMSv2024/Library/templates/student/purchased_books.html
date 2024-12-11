@@ -1,6 +1,6 @@
-{% extends "base.html" %}
-
-{% block content %}
+<div class="header-container" style="margin-top: rem;">
+<h2 >Your Purchased Books</h2>
+</div>
 <style>
     body {
         background-color: #f8f9fa;
@@ -30,32 +30,26 @@
     .table-striped tbody tr:nth-of-type(odd) {
         background-color: #f9f9f9;
     }
+
 </style>
 
-<div class="container mt-4">
-    <h1 class="text-center">Purchased Books</h1>
-
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Purchase Date</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for purchase in purchased_books %}
-            <tr>
-                <td>{{ purchase.book.title }}</td>
-                <td>{{ purchase.purchase_date|date:"d M, Y" }}</td>
-                <td>${{ purchase.purchase_price }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="3" class="text-center">No purchased books found.</td>
-            </tr>
+{% if purchases %}
+    <div class="purchases-list">
+        <ul>
+            {% for purchase in purchases %}
+                <li class="purchase-item">
+                    <div class="book-details">
+                        <strong>Book Title:</strong> <span class="book-title">{{ purchase.book.title }}</span> <br>
+                        <strong>Purchased On:</strong> <span class="purchase-date">{{ purchase.purchase_date }}</span> <br>
+                        <strong>Price:</strong> $<span class="purchase-price">{{ purchase.purchase_price }}</span> <br>
+                        <strong>Payment Method:</strong> <span class="payment-method">{{ purchase.payment.payment_method }}</span> <br>
+                    </div>
+                    <!-- "Read" button for each book -->
+                    <a href="{% url 'read_book_purchase' book_id=purchase.book.id %}" class="read-btn">Read Book</a>
+                </li>
             {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% endblock %}
+        </ul>
+    </div>
+{% else %}
+    <p>You have not purchased any books yet.</p>
+{% endif %}

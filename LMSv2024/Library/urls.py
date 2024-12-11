@@ -58,4 +58,14 @@ urlpatterns = [
     path('membership/payment/success/', views.payment_success, name='payment_success'),
     # path('download-invoice/<int:payment_id>/', views.download_invoice, name='download_invoice'),
 
+    path('student/purchase-books/', views.purchase_books, name='purchase_books'),
+
+   
+    path('buy-book/<int:book_id>/', views.buy_book, name='buy_book'),
+    path('payment-page/<int:book_id>/', views.payment_page, name='payment_page'),
+    
+    path('student/purchase-confirmation/<int:book_id>/', views.purchase_confirmation, name='purchase_confirmation'),
+
+    path('purchase-list/', views.purchase_list, name='purchased_books'),
+    path('read-book/<int:book_id>/', views.read_book_purchase, name='read_book_purchase'),
 ]
