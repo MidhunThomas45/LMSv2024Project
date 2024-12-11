@@ -461,21 +461,70 @@ def available_books(request):
     return render(request, 'student/rent_book.html', context)
 
 
+from decimal import Decimal
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Book, Rent, Payment
+from django.contrib.auth.decorators import login_required
+from datetime import date
+
 @login_required
 def rent_book(request, book_id):
     """
     View to rent a book for non-accessible books based on membership.
     """
     book = get_object_or_404(Book, id=book_id)
-    rent_fee = book.price * 0.1  # 10% of the book price
+    
+    # Calculate the rental fee (10% of the book price)
+    rent_fee = book.price * Decimal('0.1')  # Convert 0.1 to Decimal
 
-    Rent.objects.create(
+    # Create Rent entry in the Rent table
+    rent = Rent.objects.create(
         user=request.user,
         book=book,
-        rent_start_date=date.today(),
-        rent_fee=rent_fee,
+        rental_fee=rent_fee,
     )
-    return redirect('available_books')
+
+    # Redirect to the payment page for this rent transaction
+    return redirect('process_payment_rent', rent_id=rent.id)
+
+
+@login_required
+def process_payment_rent(request, rent_id):
+    """
+    View to handle payment for a rent.
+    """
+    rent = get_object_or_404(Rent, id=rent_id)
+    
+    if request.method == 'POST':
+        # Assuming the user selects a payment method and completes the payment
+        payment_method = request.POST.get('payment_method', 'Card')  # Default to Card if not specified
+        
+        # Create Payment entry in the Payment table
+        payment = Payment.objects.create(
+            user=request.user,
+            amount=rent.rental_fee,
+            payment_type='Rent',
+            payment_method=payment_method
+        )
+        
+        # Update Rent to associate it with the payment
+        rent.payment = payment
+        rent.save()
+
+        # Redirect to a confirmation page or success page
+        return redirect('payment_success_rent')
+
+    return render(request, 'payment/payment_page_rent.html', {'rent': rent})
+
+
+@login_required
+def payment_success_rent(request):
+    """
+    View to show payment success message after a successful payment.
+    """
+    return render(request, 'payment/payment_success_rent.html')
+
+
 
 
 @login_required
@@ -786,3 +835,16 @@ def download_invoice(request, payment_id):
         return HttpResponse('Error generating PDF', status=500)
 
     return response
+
+
+@login_required
+def read_book(request, rent_id):
+    """
+    View to provide access to the rented book content.
+    """
+    rent = get_object_or_404(Rent, id=rent_id, user=request.user)
+    if rent.end_date >= date.today():  # Ensure the rental period is valid
+        book_content = rent.book.isbn.book_content  # Assuming book content is stored in the ISBN model
+        return render(request, 'book_operations/read_book.html', {'book': rent.book, 'book_content': book_content})
+    else:
+        return render(request, 'book_operations/rental_expired.html', {'book': rent.book})

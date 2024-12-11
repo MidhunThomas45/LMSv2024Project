@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center">Rental Expired</h1>
+    <p class="text-center">Your rental period for "{{ book.title }}" has expired. Please rent again to access the book.</p>
+    <a href="{% url 'rent_book' book.id %}" class="btn btn-primary">Rent Again</a>
+</div>
+{% endblock %}

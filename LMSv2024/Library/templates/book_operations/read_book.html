@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center">Reading "{{ book.title }}"</h1>
+
+    <div class="book-content mt-4">
+        <pre style="white-space: pre-wrap; word-wrap: break-word;">{{ book_content }}</pre>
+    </div>
+</div>
+{% endblock %}

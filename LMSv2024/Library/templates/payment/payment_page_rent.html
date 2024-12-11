@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center">Payment for Renting "{{ rent.book.title }}"</h1>
+    <p><strong>Rental Fee:</strong> {{ rent.rental_fee }}</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <!-- Payment Method Selection -->
+        <label for="payment_method">Select Payment Method</label>
+        <select name="payment_method" id="payment_method" class="form-control" required>
+            <option value="Card">Card</option>
+            <option value="UPI">UPI</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary mt-4">Pay Now</button>
+    </form>
+</div>
+{% endblock %}

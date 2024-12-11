@@ -84,3 +84,11 @@ class MembershipForm(forms.ModelForm):
             'price_per_month': forms.NumberInput(attrs={'class': 'form-control'}),
             'book_access_percentage': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
+from django import forms
+from .models import Rent
+
+class RentForm(forms.ModelForm):
+    class Meta:
+        model = Rent
+        fields = ['user', 'book', 'rental_fee']  # Exclude 'start_date', it will be auto-filled

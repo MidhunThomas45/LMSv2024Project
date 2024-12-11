@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Rent your Book</h1>
+    <h1 class="text-center">Rent your Book</h1>
 
     <div class="row">
         {% for book in rent_books %}
@@ -18,10 +18,13 @@
                     </p>
                     <div class="mt-auto">
                         {% if book.accessible %}
-                        <a href="{% url 'read_book' book.id %}" class="btn btn-success btn-block mb-2">Read</a>
+                            <a href="{% url 'read_book' rent.id %}" class="btn btn-success btn-block mb-2">
+                                Read Now
+                            </a>
                         {% else %}
-                        <a href="{% url 'rent_book' book.id %}" class="btn btn-warning btn-block mb-2">Rent for ${{ book.rent_price }}</a>
-                        <!-- <a href="{% url 'purchase_book' book.id %}" class="btn btn-warning btn-block">Purchase for ${{ book.price }}</a> -->
+                            <a href="{% url 'rent_book' book.id %}" class="btn btn-warning btn-block mb-2">
+                                Rent for ${{ book.rent_price }}
+                            </a>
                         {% endif %}
                     </div>
                 </div>
@@ -31,95 +34,3 @@
     </div>
 </div>
 {% endblock %}
-
-<style>
-/* Add margin to the top of the container to provide space for the navbar */
-.container {
-    margin-top: 80px; /* Adjust as needed based on your navbar height */
-}
-
-/* Styling for book cards */
-.book-card {
-    border-radius: 8px;
-    overflow: hidden;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.book-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-}
-
-.book-card img {
-    height: 250px;
-    width: 100%;
-    object-fit: cover;
-    border-bottom: 1px solid #ddd;
-}
-
-.card-body {
-    display: flex;
-    flex-direction: column;
-    padding: 15px;
-}
-
-.card-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-    color: #333;
-}
-
-.card-text {
-    font-size: 0.9rem;
-    color: #666;
-    line-height: 1.5;
-}
-
-.card-text strong {
-    color: #333;
-}
-
-/* Button Styles */
-.btn-block {
-    width: 100%;
-    border-radius: 20px;
-    padding: 10px;
-    text-align: center;
-}
-
-.btn-success {
-    background-color: #28a745;
-    border: none;
-    transition: background-color 0.3s;
-}
-
-.btn-success:hover {
-    background-color: #218838;
-}
-
-.btn-warning {
-    background-color: #ffc107;
-    border: none;
-    transition: background-color 0.3s;
-}
-
-.btn-warning:hover {
-    background-color: #e0a800;
-}
-
-/* Responsive Styling */
-@media (max-width: 767px) {
-    .book-card img {
-        height: 220px;
-    }
-
-    .card-title {
-        font-size: 1.1rem;
-    }
-}
-</style>
