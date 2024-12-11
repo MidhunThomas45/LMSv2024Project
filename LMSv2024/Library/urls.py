@@ -68,4 +68,7 @@ urlpatterns = [
 
     path('purchase-list/', views.purchase_list, name='purchased_books'),
     path('read-book/<int:book_id>/', views.read_book_purchase, name='read_book_purchase'),
+
+    path('list-all-books/', views.list_all_books, name='list_all_books'),
+
 ]

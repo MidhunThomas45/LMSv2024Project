@@ -1,10 +1,19 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="container" >
+    <div class="container">
         <div class="header-container" style="margin-top:6rem;">
-        <h2 class="text-center my-4">Purchase Books</h2>
+            <h2 class="text-center my-4">Purchase Books</h2>
+
+            <!-- Search Bar -->
+            <form method="get" action="{% url 'purchase_books' %}" class="mb-4">
+                <div class="input-group mx-auto" style="max-width: 600px;">
+                    <input type="text" name="q" class="form-control rounded-pill" placeholder="Search by title, author, or genre..." value="{{ query }}">
+                    <button class="btn btn-primary rounded-pill" type="submit">Search</button>
+                </div>
+            </form>
         </div>
+
         <div class="row">
             {% for book in books %}
                 <div class="col-md-3 mb-4">
@@ -15,7 +24,9 @@
                             <h5 class="card-title">{{ book.title }}</h5>
                             <p class="card-text">{{ book.description }}</p>
                             <p class="card-text"><strong>Price: ${{ book.price }}</strong></p>
-                            <!-- Change the button to go to the payment page -->
+                            <p class="card-text"><strong>Author:</strong> {{ book.author.name }}</p>
+                            <p class="card-text"><strong>Genre:</strong> {{ book.category.name }}</p>
+                            <!-- Button to go to the payment page -->
                             <a href="{% url 'payment_page' book.id %}" class="btn btn-success">Buy</a>
                         </div>
                     </div>
@@ -23,40 +34,58 @@
             {% endfor %}
         </div>
     </div>
+
     <!-- Back to Dashboard button -->
-<div class="back-btn-container">
-    <a href="{% url 'student_dashboard' %}" class="btn-back-to-dashboard">Back to Dashboard</a>
-</div>
-<style>
-    /* Style for the "Back to Dashboard" button */
-    .btn-back-to-dashboard {
-        display: inline-block;
-        padding: 10px 20px;
-        margin-top: 30px;
-        background-color: #5e5f5e;
-        color: white;
-        font-size: 16px;
-        font-weight: bold;
-        border-radius: 5px;
-        text-align: center;
-        text-decoration: none;
-        transition: background-color 0.3s ease, transform 0.3s ease;
-    }
+    <div class="back-btn-container">
+        <a href="{% url 'student_dashboard' %}" class="btn-back-to-dashboard">Back to Dashboard</a>
+    </div>
 
-    /* Hover effect for the "Back to Dashboard" button */
-    .btn-back-to-dashboard:hover {
-        background-color: #4f524f;
-        transform: translateY(-3px);
-    }
+    <style>
+        /* Style for the "Back to Dashboard" button */
+        .btn-back-to-dashboard {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 30px;
+            background-color: #5e5f5e;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
 
-    .btn-back-to-dashboard:active {
-        background-color: #4d4f4d;
-        transform: translateY(0);
-    }
+        /* Hover effect for the "Back to Dashboard" button */
+        .btn-back-to-dashboard:hover {
+            background-color: #4f524f;
+            transform: translateY(-3px);
+        }
 
-    /* Center the "Back to Dashboard" button */
-    .back-btn-container {
-        text-align: center;
-    }
-</style>
+        .btn-back-to-dashboard:active {
+            background-color: #4d4f4d;
+            transform: translateY(0);
+        }
+
+        /* Center the "Back to Dashboard" button */
+        .back-btn-container {
+            text-align: center;
+        }
+
+        /* Search Bar Styling */
+        .input-group {
+            margin: 0 auto;
+        }
+
+        .form-control {
+            border-radius: 50px;
+            padding: 10px 20px;
+        }
+
+        .btn-primary {
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-weight: 600;
+        }
+    </style>
 {% endblock %}

@@ -862,13 +862,23 @@ def buy_book(request, book_id):
         return redirect('login')
     
 
-
-@login_required   
+@login_required
 def purchase_books(request):
-    # Fetch books available for purchase
-    books = Book.objects.all()  # Or use filters if needed (e.g., available or in stock)
-    return render(request, 'student/purchase_book.html', {'books': books})
-
+    query = request.GET.get('q', '')  # Get the search query from the URL (GET request)
+    
+    # If a query is provided, filter the books by title, author, or category
+    if query:
+        books = Book.objects.filter(
+            title__icontains=query
+        ) | Book.objects.filter(
+            author__name__icontains=query
+        ) | Book.objects.filter(
+            category__name__icontains=query
+        )
+    else:
+        books = Book.objects.all()  # If no query, fetch all books
+    
+    return render(request, 'student/purchase_book.html', {'books': books, 'query': query})
 
 @login_required
 def payment_page(request, book_id):
@@ -940,3 +950,19 @@ def read_book_purchase(request, book_id):
     
     # Pass the book and its content to the template
     return render(request, 'student/read_book_purchase.html', {'book': book, 'content': content})
+
+def list_all_books(request):
+    query = request.GET.get('q')
+    if query:
+        books = Book.objects.filter(
+            title__icontains=query
+        ) | Book.objects.filter(
+            author__name__icontains=query
+        ) | Book.objects.filter(
+            category__name__icontains=query
+        ) | Book.objects.filter(
+            language__name__icontains=query
+        )
+    else:
+        books = Book.objects.all()
+    return render(request, 'student/list_all_books.html', {'books': books, 'query': query})
