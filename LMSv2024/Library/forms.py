@@ -15,8 +15,7 @@ class UserRegistratioForm(forms.ModelForm):
     # Password
     password = forms.CharField(
         label='Password',
-        widget=forms.PasswordInput,
-        min_length=8,  # Add minimum length for password
+        widget=forms.PasswordInput
     )
     # Confirm password
     password2 = forms.CharField(
@@ -34,42 +33,6 @@ class UserRegistratioForm(forms.ModelForm):
         if cd.get('password') != cd.get('password2'):
             raise ValidationError('Passwords do not match!')
         return cd['password2']
-
-    # Validate password strength
-    def clean_password(self):
-        password = self.cleaned_data.get('password')
-        
-        # Check for at least one digit
-        if not re.search(r'\d', password):
-            raise ValidationError('Password must contain at least one digit.')
-
-        # Check for at least one lowercase letter
-        if not re.search(r'[a-z]', password):
-            raise ValidationError('Password must contain at least one lowercase letter.')
-
-        # Check for at least one uppercase letter
-        if not re.search(r'[A-Z]', password):
-            raise ValidationError('Password must contain at least one uppercase letter.')
-
-        # Check for at least one special character
-        if not re.search(r'[@$!%*?&]', password):
-            raise ValidationError('Password must contain at least one special character.')
-
-        return password
-
-    # Ensure the username is unique
-    def clean_username(self):
-        username = self.cleaned_data.get('username')
-        if User.objects.filter(username=username).exists():
-            raise ValidationError('Username is already taken.')
-        return username
-
-    # Ensure the email is unique
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
-            raise ValidationError('This email address is already associated with another account.')
-        return email
 
         
 
