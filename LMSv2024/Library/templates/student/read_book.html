@@ -4,28 +4,53 @@
 <style>
     /* Add padding to the top for the topbar */
     body {
-        padding-top: 70px; /* Adjust based on your topbar height */
+        padding-top: 80px; /* Adjusted based on your topbar height */
+        background-color: #f7f7f7; /* Light background color */
+        font-family: 'Arial', sans-serif;
     }
 
-    /* Card styling */
-    .book-content-card {
-        margin: 20px auto;
+    /* Reading Mode Container */
+    .reading-container {
+        margin: 0 auto;
+        max-width: 800px;
+        background-color: #fff;
+        padding: 30px;
         border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 40px;
     }
 
+    /* Book Title */
+    .book-title {
+        font-size: 32px;
+        font-weight: bold;
+        color: #2d3a47;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    /* Book Content Styling */
     .book-content-card .card-body {
-        background-color: #f9f9f9;
+        background-color: #fff;
         padding: 20px;
-        font-size: 16px;
-        line-height: 1.6;
+        font-size: 18px;
+        line-height: 1.8;
+        color: #333;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+
+    .book-content-card p {
+        margin-bottom: 20px;
     }
 
     /* Back to Dashboard button styling */
     .back-button {
         display: block;
         margin: 20px auto;
-        width: fit-content;
         padding: 10px 20px;
         font-size: 16px;
         border-radius: 5px;
@@ -33,21 +58,39 @@
         color: white;
         text-decoration: none;
         transition: background-color 0.3s ease;
+        width: fit-content;
+        text-align: center;
     }
 
     .back-button:hover {
         background-color: #21272e;
     }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .reading-container {
+            padding: 20px;
+        }
+
+        .book-title {
+            font-size: 28px;
+        }
+
+        .book-content-card .card-body {
+            font-size: 16px;
+        }
+    }
 </style>
 
 <div class="container mt-4">
-    <h1 class="text-center">{{ book.title }}</h1>
+    <div class="reading-container">
+        <h1 class="book-title">{{book.title}}</h1>
 
-    <!-- Book Content Card -->
-    <div class="card book-content-card mt-4">
-        <div class="card-body">
-            <h4>Book Content</h4>
-            <p>{{ book.isbn.book_content }}</p>
+        <!-- Book Content Card -->
+        <div class="card book-content-card mt-4">
+            <div class="card-body">
+                <p>{{book_content}}</p>
+            </div>
         </div>
     </div>
 

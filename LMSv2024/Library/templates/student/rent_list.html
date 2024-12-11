@@ -52,6 +52,21 @@
     .back-button:hover {
         background-color: #22282e;
     }
+
+    /* Read Button Styling */
+    .read-button {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .read-button:hover {
+        background-color: #0056b3;
+    }
 </style>
 
 <div class="container mt-4">
@@ -65,16 +80,19 @@
                     <th>Title <span class="text-danger">*</span></th>
                     <th>Rent Date <span class="text-danger">*</span></th>
                     <th>End Date <span class="text-danger">*</span></th>
-
+                    <th>Action <span class="text-danger">*</span></th>
                 </tr>
             </thead>
             <tbody>
-                {% for rent in rented_books %}
+                {% for rent in rents %}
                 <tr>
                     <td>{{ rent.book.title }}</td>
-                    <td>{{ rent.rent_date|date:"d M, Y" }}</td>
+                    <td>{{ rent.start_date|date:"d M, Y" }}</td>
                     <td>{{ rent.end_date|date:"d M, Y" }}</td>
-                    
+                    <td>
+                        <!-- Button to Read the Book -->
+                        <a href="{% url 'read_book' rent.book.id %}" class="read-button">Read Book</a>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>

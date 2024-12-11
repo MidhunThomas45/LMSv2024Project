@@ -549,14 +549,15 @@ def purchase_book(request, book_id):
     return render(request, 'student/purchase_book.html', context)
 
 
-@login_required
+@login_required 
 def rent_list(request):
     """
     View to display the list of rented books by the user.
     """
-    rents = Rent.objects.filter(user=request.user)
+    rents = Rent.objects.filter(user=request.user)  # Assuming Rent model tracks user rents
     context = {'rents': rents}
     return render(request, 'student/rent_list.html', context)
+
 
 
 @login_required
@@ -837,14 +838,25 @@ def download_invoice(request, payment_id):
     return response
 
 
+
 @login_required
 def read_book(request, rent_id):
     """
     View to provide access to the rented book content.
+    
     """
-    rent = get_object_or_404(Rent, id=rent_id, user=request.user)
-    if rent.end_date >= date.today():  # Ensure the rental period is valid
-        book_content = rent.book.isbn.book_content  # Assuming book content is stored in the ISBN model
-        return render(request, 'book_operations/read_book.html', {'book': rent.book, 'book_content': book_content})
-    else:
-        return render(request, 'book_operations/rental_expired.html', {'book': rent.book})
+    try:
+        # Attempt to retrieve the Rent object for the current user and rent_id
+        rent = Rent.objects.get(id=rent_id, user=request.user)
+        
+        # Check if the rental period is still valid
+        if (rent.start_date + timedelta(days=30)) >= date.today():  # Ensure the rental period is valid
+            book_contents = rent.book.isbn.book_content  # Assuming book content is stored in the ISBN model
+            return render(request, 'book_operations/read_book.html', {'book': rent.book, 'book_content': book_contents})
+        else:
+            # Rental expired
+            return render(request, 'book_operations/rental_expired.html', {'book': rent.book})
+    
+    except Rent.DoesNotExist:
+        # Handle the case where no Rent object was found for this user and rent_id
+        return render(request, 'book_operations/rent_not_found.html', {'rent_id': rent_id})
