@@ -23,4 +23,40 @@
             {% endfor %}
         </div>
     </div>
+    <!-- Back to Dashboard button -->
+<div class="back-btn-container">
+    <a href="{% url 'student_dashboard' %}" class="btn-back-to-dashboard">Back to Dashboard</a>
+</div>
+<style>
+    /* Style for the "Back to Dashboard" button */
+    .btn-back-to-dashboard {
+        display: inline-block;
+        padding: 10px 20px;
+        margin-top: 30px;
+        background-color: #5e5f5e;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    /* Hover effect for the "Back to Dashboard" button */
+    .btn-back-to-dashboard:hover {
+        background-color: #4f524f;
+        transform: translateY(-3px);
+    }
+
+    .btn-back-to-dashboard:active {
+        background-color: #4d4f4d;
+        transform: translateY(0);
+    }
+
+    /* Center the "Back to Dashboard" button */
+    .back-btn-container {
+        text-align: center;
+    }
+</style>
 {% endblock %}

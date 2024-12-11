@@ -1,6 +1,33 @@
-<div class="header-container" style="margin-top: rem;">
-<h2 >Your Purchased Books</h2>
+<div class="header-container" style="margin: top 4px;">
+    <h2>Your Purchased Books</h2>
 </div>
+
+{% if purchases %}
+    <div class="purchases-list">
+        <ul>
+            {% for purchase in purchases %}
+                <li class="purchase-item">
+                    <div class="book-details">
+                        <strong>Book Title:</strong> <span class="book-title">{{ purchase.book.title }}</span> <br>
+                        <strong>Purchased On:</strong> <span class="purchase-date">{{ purchase.purchase_date }}</span> <br>
+                        <strong>Price:</strong> $<span class="purchase-price">{{ purchase.purchase_price }}</span> <br>
+                        <strong>Payment Method:</strong> <span class="payment-method">{{ purchase.payment.payment_method }}</span> <br>
+                    </div>
+                    <!-- "Read" button for each book -->
+                    <a href="{% url 'read_book_purchase' book_id=purchase.book.id %}" class="read-btn">Read Book</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% else %}
+    <p>You have not purchased any books yet.</p>
+{% endif %}
+
+<!-- Back to Dashboard button -->
+<div class="back-btn-container">
+    <a href="{% url 'student_dashboard' %}" class="btn-back-to-dashboard">Back to Dashboard</a>
+</div>
+
 <style>
     /* Overall page style */
     h2 {
@@ -94,25 +121,34 @@
         background-color: #0056b3;
     }
 
-</style>
+    /* Style for the "Back to Dashboard" button */
+    .btn-back-to-dashboard {
+        display: inline-block;
+        padding: 10px 20px;
+        margin-top: 30px;
+        background-color: #5e5f5e;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
 
-{% if purchases %}
-    <div class="purchases-list">
-        <ul>
-            {% for purchase in purchases %}
-                <li class="purchase-item">
-                    <div class="book-details">
-                        <strong>Book Title:</strong> <span class="book-title">{{ purchase.book.title }}</span> <br>
-                        <strong>Purchased On:</strong> <span class="purchase-date">{{ purchase.purchase_date }}</span> <br>
-                        <strong>Price:</strong> $<span class="purchase-price">{{ purchase.purchase_price }}</span> <br>
-                        <strong>Payment Method:</strong> <span class="payment-method">{{ purchase.payment.payment_method }}</span> <br>
-                    </div>
-                    <!-- "Read" button for each book -->
-                    <a href="{% url 'read_book_purchase' book_id=purchase.book.id %}" class="read-btn">Read Book</a>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
-{% else %}
-    <p>You have not purchased any books yet.</p>
-{% endif %}
+    /* Hover effect for the "Back to Dashboard" button */
+    .btn-back-to-dashboard:hover {
+        background-color: #4f524f;
+        transform: translateY(-3px);
+    }
+
+    .btn-back-to-dashboard:active {
+        background-color: #4d4f4d;
+        transform: translateY(0);
+    }
+
+    /* Center the "Back to Dashboard" button */
+    .back-btn-container {
+        text-align: center;
+    }
+</style>
