@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-success">Payment Successful!</h2>
+    <p class="text-center">Your membership has been activated. You can now enjoy full access to the library.</p>
+    <div class="text-center mt-4">
+        <a href="{% url 'student_dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+    </div>
+</div>
+{% endblock %}
