@@ -1,34 +1,106 @@
-<!-- invoice.html -->
 {% extends "base.html" %}
 
 {% block content %}
-  <h2>Invoice</h2>
-
-  <p><strong>Payment Details:</strong></p>
-  <ul>
-    <li>Purpose: {{ payment.payment_type }}</li>
-    <li>Amount: ₹{{ payment.amount }}</li>
-    <li>Payment Method: {{ payment.payment_method }}</li>
-    <li>Payment Date: {{ payment.payment_date }}</li>
-  </ul>
-
-  <p><strong>User Details:</strong></p>
-  <ul>
-    <li>Username: {{ user.username }}</li>
-    <li>Email: {{ user.email }}</li>
-  </ul>
-
-  {% if payment.book %}
-    <p><strong>Book Details:</strong></p>
+<div class="invoice-container">
+  <h2 class="invoice-header">Invoice</h2>
+  
+  <section class="payment-details">
+    <h3>Payment Details:</h3>
     <ul>
-      <li>Book Title: {{ book.title }}</li>
-      <li>Book Author: {{ book.author.name }}</li>
-      <li>Book Price: ₹{{ book.price }}</li>
+      <li><strong>Purpose:</strong> {{ payment.payment_type }}</li>
+      <li><strong>Amount:</strong> ₹{{ payment.amount }}</li>
+      <li><strong>Payment Method:</strong> {{ payment.payment_method }}</li>
+      <li><strong>Payment Date:</strong> {{ payment.payment_date|date:"F d, Y H:i" }}</li>
     </ul>
+  </section>
+
+  <section class="user-details">
+    <h3>User Details:</h3>
+    <ul>
+      <li><strong>Username:</strong> {{ user.username }}</li>
+      <li><strong>Email:</strong> {{ user.email }}</li>
+    </ul>
+  </section>
+
+  {% if book %}
+  <section class="book-details">
+    <h3>Book Details:</h3>
+    <ul>
+      <li><strong>Book Title:</strong> {{ book.title }}</li>
+      <li><strong>Book Author:</strong> {{ book.author.name }}</li>
+      <li><strong>Book Price:</strong> ₹{{ book.price }}</li>
+    </ul>
+  </section>
   {% endif %}
 
   {% if payment.delivery_address %}
-    <p><strong>Delivery Address:</strong></p>
+  <section class="delivery-address">
+    <h3>Delivery Address:</h3>
     <p>{{ payment.delivery_address }}</p>
+  </section>
   {% endif %}
+</div>
+
+<style>
+  /* Adding space for the top bar */
+  body {
+    margin-top: 80px; /* Adjust this value based on the height of your top bar */
+  }
+
+  .invoice-container {
+    font-family: Arial, sans-serif;
+    margin: 40px auto;
+    max-width: 700px;
+    border: 1px solid #ddd;
+    padding: 25px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .invoice-header {
+    text-align: center;
+    font-size: 28px;
+    color: #4CAF50;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+    border-bottom: 2px solid #4CAF50;
+    display: inline-block;
+    padding-bottom: 5px;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+  }
+
+  li {
+    margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  strong {
+    font-weight: bold;
+    color: #555;
+  }
+
+  .delivery-address {
+    margin-top: 20px;
+  }
+
+  p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+  }
+</style>
 {% endblock %}

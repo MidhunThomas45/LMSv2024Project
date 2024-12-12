@@ -17,14 +17,16 @@
         <div class="row row-cols-1 row-cols-md-3 g-4">
             {% for book in books %}
                 <div class="col">
-                    <div class="card shadow-sm border-light">
-                        {% if book.book_image %}
-                            <img src="{{ book.book_image.url }}" class="card-img-top" alt="{{ book.title }}">
-                        {% else %}
-                            <img src="{% static 'images/default_book.png' %}" class="card-img-top" alt="Default Image">
-                        {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title">{{ book.title }}</h5>
+                    <div class="card shadow-sm border-light h-100">
+                        <div class="card-img-container">
+                            {% if book.book_image %}
+                                <img src="{{ book.book_image.url }}" class="card-img-top img-square" alt="{{ book.title }}">
+                            {% else %}
+                                <img src="{% static 'images/default_book.png' %}" class="card-img-top img-square" alt="Default Image">
+                            {% endif %}
+                        </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-truncate" title="{{ book.title }}">{{ book.title }}</h5>
                             <p class="card-text">
                                 <strong>Author:</strong> {{ book.author.name }}<br>
                                 <strong>Category:</strong> {{ book.category.name }}<br>
@@ -50,9 +52,7 @@
 <style>
     /* Container Styling */
     .container {
-        background-color: #f9f9f9; /* Light background for the container */
-        padding: 30px;
-        border-radius: 10px;
+        font-family: Arial, sans-serif;
     }
 
     /* Search Bar Styling */
@@ -61,20 +61,40 @@
     }
 
     .form-control {
-        border-radius: 50px; /* Rounded corners for input field */
-        padding: 10px 20px; /* Adequate padding */
+        border-radius: 50px;
+        padding: 10px 20px;
     }
 
     .btn-primary {
-        border-radius: 50px; /* Rounded corners for button */
+        border-radius: 50px;
         padding: 10px 20px;
         font-weight: 600;
     }
 
     /* Card Styling */
     .card {
-        border-radius: 10px; /* Rounded corners for card */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card-img-container {
+        height: 200px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .img-square {
+        height: 100%;
+        width: auto;
     }
 
     .card-body {
@@ -84,16 +104,19 @@
     .card-title {
         font-size: 1.25rem;
         font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .text-truncate {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 
     .card-text {
-        font-size: 1rem;
+        font-size: 0.95rem;
         color: #555;
-    }
-
-    .card-footer {
-        background-color: #f8f9fa;
-        border-top: 1px solid #ddd;
+        text-align: center;
     }
 
     /* Back to Dashboard Button */
@@ -116,7 +139,7 @@
 
     /* Prevent navbar styles from being affected */
     body {
-        padding-top: 56px;  /* Ensure content isn't hidden behind the navbar */
+        padding-top: 56px;
     }
 </style>
 {% endblock %}

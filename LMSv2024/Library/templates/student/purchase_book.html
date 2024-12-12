@@ -1,26 +1,116 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
-    <div class="container" >
-        <div class="header-container" style="margin-top:6rem;">
-        <h2 class="text-center my-4">Purchase Books</h2>
-        </div>
-        <div class="row">
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Purchase Books</h2>
+
+        <!-- Search Bar -->
+        <form method="get" action="{% url 'purchase_books' %}" class="mb-4">
+            <div class="input-group mx-auto" style="max-width: 600px;">
+                <input type="text" name="q" class="form-control rounded-pill" placeholder="Search by title, author, or genre..." value="{{ query }}">
+                <button class="btn btn-primary rounded-pill" type="submit">Search</button>
+            </div>
+        </form>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             {% for book in books %}
-                <div class="col-md-3 mb-4">
-                    <div class="card">
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-light">
                         <img src="{{ book.book_image.url }}" class="card-img-top" alt="{{ book.title }}">
 
-                        <div class="card-body">
+                        <div class="card-body d-flex flex-column">
                             <h5 class="card-title">{{ book.title }}</h5>
-                            <p class="card-text">{{ book.description }}</p>
-                            <p class="card-text"><strong>Price: ${{ book.price }}</strong></p>
-                            <!-- Change the button to go to the payment page -->
-                            <a href="{% url 'payment_page' book.id %}" class="btn btn-success">Buy</a>
+                            <p class="card-text text-muted">{{ book.description|truncatewords:20 }}</p>
+                            <p class="card-text"><strong>Price:</strong> ${{ book.price }}</p>
+                            <p class="card-text"><strong>Author:</strong> {{ book.author.name }}</p>
+                            <p class="card-text"><strong>Genre:</strong> {{ book.category.name }}</p>
+                            
+                            <div class="mt-auto">
+                                <!-- Button to go to the payment page -->
+                                <a href="{% url 'payment_page' book.id %}" class="btn btn-success w-100">Buy</a>
+                            </div>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     </div>
+
+    <!-- Back to Dashboard button -->
+    <div class="text-center mt-4">
+        <a href="{% url 'student_dashboard' %}" class="btn btn-secondary rounded-pill px-4 py-2">Back to Dashboard</a>
+    </div>
+
+    <style>
+        /* Search Bar Styling */
+        .input-group {
+            margin: 0 auto;
+        }
+
+        .form-control {
+            border-radius: 50px;
+            padding: 10px 20px;
+        }
+
+        .btn-primary {
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-weight: 600;
+        }
+
+        /* Card Styling */
+        .card {
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            overflow: hidden;
+        }
+
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-text {
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .btn-success {
+            font-weight: bold;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .input-group {
+                max-width: 100%;
+            }
+
+            .card-img-top {
+                height: 150px;
+            }
+        }
+
+        /* Back to Dashboard Button */
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+    </style>
 {% endblock %}
