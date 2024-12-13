@@ -105,3 +105,4 @@ class AddReviewForm(forms.ModelForm):
     class Meta:
         model= Reviews
         fields=('rating','title','description')
+

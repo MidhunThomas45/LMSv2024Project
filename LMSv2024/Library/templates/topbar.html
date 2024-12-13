@@ -27,35 +27,50 @@
                         </a>
                     {% endif %}
                 </li>
-                
+        
                 <li class="nav-item">
                     {% if request.user.is_authenticated %}
                         {% if is_librarian %}
-                            <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="{% url 'librarian_dashboard' %}">
-                                <i class="fas fa-user"></i> <!-- Font Awesome User Icon -->
+                            <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="#">
+                                <i class="fas fa-user"></i>
                             </a>
                         {% else %}
                             <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="{% url 'student_profile' %}">
-                                <i class="fas fa-user"></i> <!-- Font Awesome User Icon -->
+                                <i class="fas fa-user"></i>
                             </a>
                         {% endif %}
                     {% else %}
                         <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="{% url 'landing_page' %}">
-                            <i class="fas fa-user"></i> <!-- Font Awesome User Icon -->
+                            <i class="fas fa-user"></i>
                         </a>
                     {% endif %}
                 </li>
                 
                 
-                <!-- Notification Bell for Logged-in Students -->
-                {% if request.user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="{% url 'notifications' %}" id="notificationBell">
+                <!-- Notification Bell for Logged-in Users -->
+                <li class="nav-item">
+                    {% if request.user.is_authenticated %}
+                        {% if is_librarian %}
+                            <!-- Notification Bell for Librarian -->
+                            <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="#" id="notificationBell">
+                                <i class="fas fa-bell"></i> <!-- Bell icon -->
+                                <span class="badge bg-danger" id="notificationBadge" style="display: none;">3</span> <!-- Badge for unread notifications -->
+                            </a>
+                        {% else %}
+                            <!-- Notification Bell for Student -->
+                            <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="{% url 'notifications' %}" id="notificationBell">
+                                <i class="fas fa-bell"></i> <!-- Bell icon -->
+                                <span class="badge bg-danger" id="notificationBadge" style="display: none;">3</span> <!-- Badge for unread notifications -->
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <!-- No Notification Bell for Unauthenticated Users -->
+                        <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="{% url 'landing_page' %}">
                             <i class="fas fa-bell"></i> <!-- Bell icon -->
-                            <span class="badge bg-danger" id="notificationBadge" style="display: none;">3</span> <!-- Badge for unread notifications -->
                         </a>
-                    </li>
-                {% endif %}
+                    {% endif %}
+                </li>
+
                 <li class="nav-item">
                     {% if request.user.is_authenticated %}
                         <a class="nav-link btn btn-outline-dark px-4 py-2 rounded-pill" href="{% url 'logout_user' %}">Logout</a>

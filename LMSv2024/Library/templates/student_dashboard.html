@@ -46,12 +46,13 @@
 
     <!-- Membership Details -->
 <div class="mt-4">
-    <h3>Your Membership Details:</h3>
+    <!-- <h3>Your Membership Details:</h3> -->
 
     <!-- Display Student ID and Name -->
     
     {% if user_membership %}
         <ul>
+            <h3>Your Membership Details</h3>
             <li><strong>Plan:</strong> {{ user_membership.membership.name }}</li>
             <li><strong>Access Percentage:</strong> {{ user_membership.membership.book_access_percentage }}%</li>
             <li><strong>Start Date:</strong> {{ user_membership.start_date }}</li>
@@ -62,7 +63,7 @@
         </p>
     {% else %}
         <div class="mt-4">
-            <h3>No Active Membership</h3>
+            <h6>No Active Membership</h6>
             <p>You can take a membership plan by clicking the "View Memberships" option below.</p>
         </div>
     {% endif %}

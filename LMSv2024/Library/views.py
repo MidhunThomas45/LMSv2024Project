@@ -97,7 +97,7 @@ def logout_user(request):
 @user_passes_test(is_librarian)
 def librarian_dashboard(request):
     books = Book.objects.all()
-    is_librarian = 
+    
     return render(request, "librarian_dashboard.html", {"books": books})
 
 

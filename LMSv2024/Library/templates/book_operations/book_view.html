@@ -9,9 +9,9 @@
     
             <div class="card-body text-center">
                 <h5 class="card-title">{{ book.book_title }}</h5>
-                <p>Price: ₹{{ book.price }}</p>
-                <p>Rent Price: ₹{{ book.rent_price }}</p>
-                <p>Description: {{ book.description }}</p>
+                <!-- <p>Price: ₹{{ book.price }}</p>
+                <p>Rent Price: ₹{{ book.rent_price }}</p> -->
+                <p>{{ book.description }}</p>
                 <p>Author: {{ book.author }}</p>
                 <p>Category: {{ book.category }}</p>
                 <a href="{% url 'read_book' book.id %}" class="btn btn-custom">Read Book</a>
