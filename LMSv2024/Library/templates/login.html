@@ -2,44 +2,52 @@
 
 {% block title %}Login{% endblock %}
 
-
-
 {% block content %}
+  
 
-{% block style %}
-<style>
-    .login-container {
-        
-        max-width: 400px;
-        margin: 50px auto;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  <style>
+    .mt3{
+       
+            margin-top: 80px; /* Space for fixed topbar */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+     
     }
-    h2 {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .btn-primary {
-        width: 100%;
-    }
-</style>
-{% endblock %}
-<div class="login-container"style="margin-top: 10%;">
-    <h2>Login</h2>
-    <form method="POST" action="">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" name="username" required>
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Login</button>
-    </form>
-</div>
-{% endblock %}
+      .login-container {
+          max-width: 400px;
+          margin: 50px auto;
+          padding: 20px;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+          text-align: center;
+          margin-bottom: 20px;
+      }
+      .btn-primary {
+          width: 100%;
+      }
+  </style>
 
+
+  
+  <!-- Login form -->
+  <div class="login-container" style="margin-top: 10%;">
+      <h2>Login</h2>
+      <form method="POST" action="">
+          {% csrf_token %}
+          <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input type="text" class="form-control" id="username" name="username" required>
+          </div>
+          <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" name="password" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Login</button>
+      </form>
+  </div>
+  
+{% endblock %}

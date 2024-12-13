@@ -72,7 +72,7 @@ h1 {
 <div class="container mt-5">
     <br>
     {%if user_membership%}
-    <p>You already have a membership plan {{user_membership}}. </p>
+    <p><h4>You already have a membership plan {{user_membership}}. Upgrade after {{ user_membership.end_date }}</h4></p>
     {%else%}
     <h1 class="text-center mb-5 display-4 text-primary">Choose Your Membership Plan</h1>
     

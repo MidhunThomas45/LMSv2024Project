@@ -32,8 +32,9 @@
                                 <strong>Category:</strong> {{ book.category.name }}<br>
                                 <strong>Language:</strong> {{ book.language.name }}<br>
                                 <strong>Price:</strong> ${{ book.price }}<br>
-                                <strong>Quantity:</strong> {{ book.quantity }}
                             </p>
+                            <!-- Read Button -->
+                            <a href="{% url 'view_book_details' book.id %}" class="btn btn-success rounded-pill">Book Details</a>
                         </div>
                     </div>
                 </div>

@@ -32,26 +32,24 @@
 <div class="container mt-4">
     <h1 class="text-center">Student Dashboard</h1>
 
-    <!-- Display success or error messages -->
-    {% if messages %}
-        <div class="mt-3">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+    <!-- Notifications Icon
+    <a href="{% url 'notifications' %}" class="btn btn-link position-relative">
+        <i class="fas fa-bell" style="font-size: 24px;"></i>
+        {% if unread_notifications %}
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {{ unread_notifications }}
+            </span>
+        {% endif %}
+    </a> -->
+
+    
 
     <!-- Membership Details -->
 <div class="mt-4">
     <h3>Your Membership Details:</h3>
 
     <!-- Display Student ID and Name -->
-    <ul>
-        <li><strong>Student Name:</strong> {{ user.first_name }}</li>
-    </ul>
+    
     {% if user_membership %}
         <ul>
             <li><strong>Plan:</strong> {{ user_membership.membership.name }}</li>
@@ -65,7 +63,7 @@
     {% else %}
         <div class="mt-4">
             <h3>No Active Membership</h3>
-            <p>You can take a membership plan by clicking the "Membership" option below.</p>
+            <p>You can take a membership plan by clicking the "View Memberships" option below.</p>
         </div>
     {% endif %}
 </div>
@@ -73,6 +71,16 @@
 
     <!-- Flexbox Square Cards -->
     <div class="row mt-5 justify-content-center">
+
+        <div class="col-md-3 mb-4">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Profile</h5>
+                    <p class="card-text">View and edit your personal details.</p>
+                    <a href="{% url 'student_profile' %}" class="btn btn-primary">View Profile</a>
+                </div>
+            </div>
+        </div>
 
         <div class="col-md-3 mb-4">
             <div class="card text-center shadow">

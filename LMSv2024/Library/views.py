@@ -6,9 +6,9 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.db.models import Q
 from datetime import date, timedelta, timezone
-
+from django.utils import timezone
 from .forms import UserRegistratioForm, BookForm, AuthorForm, CategoryForm, PaymentForm
-from .models import ISBN, Language, Membership, Author, Category, Book, IssuedBook, Rent, Purchase, Payment, UserMembership
+from .models import ISBN, Language, Membership, Author, Category, Book, IssuedBook, Notification, Rent, Purchase, Payment, UserMembership
 
 
 
@@ -19,6 +19,12 @@ def landing_page(request):
 # Utility function to check roles
 def is_librarian(user):
     return user.groups.filter(name='Librarian').exists()
+@login_required
+def some_view(request):
+    context = {
+        'is_librarian': is_librarian(request.user),  # Add the is_librarian status to the context
+    }
+    return render(request, 'librarian_dashboard.html', context)
 
 
 
@@ -28,46 +34,30 @@ def is_librarian(user):
 
 from django.core.exceptions import ValidationError
 
-# User registration view
+from django.contrib.auth.models import Group
+
 def register(request):
     if request.method == 'POST':
+        # Get the user registration form with POST data
         user_req_form = UserRegistratioForm(request.POST)
         if user_req_form.is_valid():
-            # Check if username already exists
-            if User.objects.filter(username=user_req_form.cleaned_data['username']).exists():
-                messages.error(request, "Username already taken. Please choose a different one.")
-                return render(request, 'register.html', {'user_req_form': user_req_form})
-
-            # Check if email already exists
-            if User.objects.filter(email=user_req_form.cleaned_data['email']).exists():
-                messages.error(request, "Email already registered. Use a different email.")
-                return render(request, 'register.html', {'user_req_form': user_req_form})
-
-            # Create user instance without saving
+            # Create the user object without saving to the database yet
             new_user = user_req_form.save(commit=False)
-            
-            # Set the password
+            # Set the password after validating it
             new_user.set_password(user_req_form.cleaned_data['password'])
+            # Save the user to the database
             new_user.save()
-
-            # Add user to 'student' group
-            try:
-                group = Group.objects.get(name='student')
-                new_user.groups.add(group)
-            except Group.DoesNotExist:
-                messages.error(request, "Student group does not exist. Contact admin.")
-                return redirect('register')
             
-            # Render success page
-            messages.success(request, "Registration successful. You can now log in.")
-            return redirect("login_user")
-        else:
-            # Highlight errors in the form
-            messages.error(request, "Please correct the highlighted errors.")
+            # Assign the user to the Student group
+            student_group, created = Group.objects.get_or_create(name='Student')
+            new_user.groups.add(student_group)
+            
+            return render(request, 'register_done.html', {'user_req_form': user_req_form})
     else:
         user_req_form = UserRegistratioForm()
-
+    
     return render(request, 'register.html', {'user_req_form': user_req_form})
+
 
 
 # User login view
@@ -75,23 +65,10 @@ def login_user(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
-
-        # Basic input validations
-        if not username or not password:
-            messages.error(request, "Both username and password are required.")
-            return redirect("login_user")
-
         user = authenticate(request, username=username, password=password)
-
+        
         if user is not None:
-            # Check if user is active
-            if not user.is_active:
-                messages.error(request, "Account is inactive. Contact admin for assistance.")
-                return redirect("login_user")
-
             login(request, user)
-
-            # Redirect based on role
             if is_librarian(user):
                 return redirect("librarian_dashboard")
             elif is_student(user):
@@ -101,7 +78,7 @@ def login_user(request):
                 messages.error(request, "Invalid role. Contact admin.")
                 return redirect("login_user")
         else:
-            messages.error(request, "Invalid username or password.")
+            messages.error(request, "Invalid credentials")
             return redirect("login_user")
 
     return render(request, "login.html")
@@ -120,6 +97,7 @@ def logout_user(request):
 @user_passes_test(is_librarian)
 def librarian_dashboard(request):
     books = Book.objects.all()
+    is_librarian = 
     return render(request, "librarian_dashboard.html", {"books": books})
 
 
@@ -281,9 +259,7 @@ def delete_category(request, category_id):
 
 
 
-# Check if user is a librarian
-def is_librarian(user):
-    return user.groups.filter(name='Librarian').exists()
+
 
 # Manage Books - List and Search
 @login_required
@@ -307,7 +283,7 @@ def add_book(request):
             book = form.save(commit=False)
             book.added_by = request.user  # Automatically add the librarian
             book.save()
-            messages.success(request, "Book added successfully!")
+            messages.success(request, "new books added!")
             return redirect('manage_books')
     else:
         form = BookForm()
@@ -322,7 +298,7 @@ def update_book(request, book_id):
         form = BookForm(request.POST, request.FILES, instance=book)
         if form.is_valid():
             form.save()
-            messages.success(request, "Book updated successfully!")
+            messages.success(request, "New  version of book added!")
             return redirect('manage_books')
     else:
         form = BookForm(instance=book)
@@ -342,39 +318,44 @@ def delete_book(request, book_id):
 
 
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required, user_passes_test
+from .models import UserMembership, Membership, Book, Payment
 
-# Helper function to check if the user is a student
+
 def is_student(user):
     return user.groups.filter(name='Student').exists()
 
-@login_required
+
+
 @user_passes_test(is_student)
 def student_dashboard(request):
     """
-    Student dashboard showing books, membership plans, purchased membership details, and payment history.
+    Renders the student dashboard with membership details, accessible books, and payment history.
     """
     user = request.user
-    user_membership = UserMembership.objects.filter(user=user).first()  # Fetch user's active membership
-    memberships = Membership.objects.all()  # All available membership plans
-    books = Book.objects.all()  # All books in the system
+    user_membership = UserMembership.objects.filter(user=user).first()  # Get active membership
+    memberships = Membership.objects.all()  # All memberships
+    books = Book.objects.all()  # All books
 
-    # Fetch the payment history for the user
-    payments = Payment.objects.filter(user=user)  # Assuming you have a Payment model
-
-    # Restrict book access based on membership plan
+    # Restrict books based on membership access percentage
     if user_membership:
-        access_percentage = user_membership.membership.book_access_percentage  # Fetch access limit percentage
+        access_percentage = user_membership.membership.book_access_percentage
         total_books = books.count()
-        access_limit = int(total_books * (access_percentage / 100))  # Calculate the number of books user can access
-        books = books[:access_limit]  # Restrict books to the calculated limit
+        access_limit = int(total_books * (access_percentage / 100))
+        books = books[:access_limit]  # Restrict visible books
+
+    # Fetch payment history
+    payments = Payment.objects.filter(user=user)
 
     context = {
         'user_membership': user_membership,
         'memberships': memberships,
         'books': books,
-        'payments': payments,  # Add payment history to the context
+        'payments': payments,
     }
     return render(request, 'student_dashboard.html', context)
+
 
 
 @login_required
@@ -639,14 +620,13 @@ def make_payment(request, book_id):
     return render(request, 'payment/make_payment.html', {'book': book})
 
 # views.py
-@login_required
 def invoice(request, payment_id):
     payment = get_object_or_404(Payment, id=payment_id)
     
     context = {
         'payment': payment,
         'user': payment.user,
-        'book': payment.book,
+        'book': getattr(payment, 'book', None),  # Ensures book is optional
     }
     return render(request, 'payment/invoice.html', context)
 
@@ -874,11 +854,23 @@ def buy_book(request, book_id):
     
 
 
-@login_required   
+@login_required
 def purchase_books(request):
-    # Fetch books available for purchase
-    books = Book.objects.all()  # Or use filters if needed (e.g., available or in stock)
-    return render(request, 'student/purchase_book.html', {'books': books})
+    query = request.GET.get('q', '')  # Get the search query from the URL (GET request)
+    
+    # If a query is provided, filter the books by title, author, or category
+    if query:
+        books = Book.objects.filter(
+            title__icontains=query
+        ) | Book.objects.filter(
+            author_name_icontains=query
+        ) | Book.objects.filter(
+            category_name_icontains=query
+        )
+    else:
+        books = Book.objects.all()  # If no query, fetch all books
+    
+    return render(request, 'student/purchase_book.html', {'books': books, 'query':query})
 
 
 @login_required
@@ -951,3 +943,160 @@ def read_book_purchase(request, book_id):
     
     # Pass the book and its content to the template
     return render(request, 'student/read_book_purchase.html', {'book': book, 'content': content})
+
+
+
+
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
+
+def list_all_books(request):
+    query = request.GET.get('q')
+    if query:
+        books = Book.objects.filter(
+            title__icontains=query
+        ) | Book.objects.filter(
+            author_name_icontains=query
+        ) | Book.objects.filter(
+            category_name_icontains=query
+        ) | Book.objects.filter(
+            language_name_icontains=query
+        )
+    else:
+        books = Book.objects.all()
+    return render(request, 'student/list_all_books.html', {'books': books, 'query':query})
+
+
+
+
+
+
+
+@login_required
+def student_profile(request):
+    # Fetch the user details
+    user = request.user  # This gets the logged-in user
+    return render(request, 'student/profile.html', {'user': user})
+
+@login_required
+def edit_profile(request):
+    user = request.user  # Get the logged-in user
+
+    if request.method == 'POST':
+        user.username = request.POST['username']
+        user.first_name = request.POST['first_name']
+        user.email = request.POST['email']
+        user.save()
+        messages.success(request, "Your profile has been updated successfully.")
+        return redirect('student_profile')  # Redirect to the profile page after saving
+
+    return render(request, 'student/edit_profile.html',{'user':user})
+
+@login_required
+@user_passes_test(is_student)
+def notifications_view(request):
+    """
+    View to show all notifications for the user.
+    """
+    user = request.user
+    notifications = Notification.objects.filter(user=user)
+
+    # Mark all notifications as read
+    notifications.update(is_read=True)
+
+    return render(request, 'student/notifications.html', {'notifications':notifications})
+
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Book, Reviews, comments
+from .forms import AddCommentForm, AddReviewForm
+
+def book_view(request, pk):
+    # Retrieve the specific book using its primary key (pk)
+    book = get_object_or_404(Book, id=pk)
+
+    # Fetch comments and reviews for the book
+    comment_list = comments.objects.filter(book_comments=book)
+    reviews = Reviews.objects.filter(post=book)
+
+    # Prepare star ranges for each review
+    for review in reviews:
+        review.filled_stars = range(review.rating)  # Range for filled stars
+        review.empty_stars = range(5 - review.rating)  # Range for empty stars
+
+    # Initialize forms for comments and reviews
+    comment_form = AddCommentForm()
+    review_form = AddReviewForm()
+
+    # Handle form submissions
+    if request.method == "POST":
+        if "add_comment" in request.POST:  # Handle comment submission
+            comment_form = AddCommentForm(request.POST)
+            if comment_form.is_valid():
+                new_comment = comment_form.save(commit=False)
+                new_comment.book_comments = book
+                new_comment.save()
+                return redirect('view_book_details', pk=pk)
+        elif "add_review" in request.POST:  # Handle review submission
+            review_form = AddReviewForm(request.POST)
+            if review_form.is_valid():
+                new_review = review_form.save(commit=False)
+                new_review.post = book
+                new_review.review_author = request.user
+                new_review.save()
+                return redirect('view_book_details', pk=pk)
+
+    # Render the book view template
+    return render(request, "book_operations/book_view.html", {
+        'book': book,
+        "comm": comment_list,
+        'reviews': reviews,
+        'comment_form': comment_form,
+        'review_form': review_form,
+    })
+
+
+from django.shortcuts import get_object_or_404, redirect
+from django.http import HttpResponseForbidden
+from django.contrib.auth.decorators import login_required
+from datetime import datetime
+
+@login_required
+def read_book(request, book_id):
+    """
+    View to allow users to read the content of a book based on their membership plan.
+    The content is stored in the ISBN model.
+    """
+    user = request.user
+    book = get_object_or_404(Book, id=book_id)
+
+    # Check if the user has an active membership
+    user_membership = user.usermembership_set.first()
+    if not user_membership:
+        # Redirect the user to the membership plans page if they don't have an active membership
+        return redirect('membership_plans')
+
+    # Retrieve membership details
+    membership = user_membership.membership
+    percentage = membership.book_access_percentage
+
+    # Calculate accessible books based on membership
+    total_books = Book.objects.count()
+    accessible_books_count = total_books * percentage // 100
+    accessible_books = Book.objects.all()[:accessible_books_count]
+
+    # Check if the book is within the user's accessible range
+    if book not in accessible_books:
+        return HttpResponseForbidden("You do not have access to this book under your current membership plan.")
+
+    # If the user has access, display the book content
+    book_content = book.isbn.book_content
+    if not book_content:
+        return HttpResponseForbidden("This book does not currently have content available.")
+
+    context = {
+        'book': book,
+        'book_content': book_content,
+    }
+    return render(request, 'book_operations/read_bookss.html', context)

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Book Info Section -->
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h2>{{ book.title }}</h2>
+            <p><strong>Author:</strong> {{ book.author }}</p>
+            <p><strong>Category:</strong> {{ book.category }}</p>
+        </div>
+    </div>
+
+    <!-- Full Reading Space -->
+    <div class="row">
+        <div class="col-12">
+            <div class="book-content">
+                <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace; line-height: 1.6; font-size: 1.1em;">
+                    {{ book_content }}
+                </pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+
+/* Read Book Page Styling */
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.book-content {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: 80vh; /* Take most of the available vertical space */
+    overflow-y: auto;
+}
+
+.book-content pre {
+    font-size: 1.2em;
+    line-height: 1.8;
+    color: #333;
+    white-space: pre-wrap;
+}
+
+.row {
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 2.5em;
+    color: #007bff;
+}
+
+p {
+    font-size: 1.2em;
+    color: #555;
+}
+
+.mb-4 {
+    margin-bottom: 40px;
+}
+
+
+</style>
+{% endblock %}

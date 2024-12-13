@@ -162,3 +162,42 @@ class Purchase(models.Model):
 
     def __str__(self):
         return f"{self.user.username} purchased {self.book.title}"
+
+
+    
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    message = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+    
+
+    def _str_(self):
+        return f"Notification for {self.user.username}:{self.message}"
+    
+
+class comments(models.Model):
+    book_comments=models.ForeignKey(Book,on_delete=models.CASCADE)
+    comment_text=models.TextField()
+    comment_published_datetime=models.DateTimeField(auto_now_add=True)
+
+    def _str_(self):
+        return self.comment_text
+    
+class Reviews(models.Model):
+    stars=(
+        (1,'one star'),
+        (2,'two star'),
+        (3,'three star'),
+        (4,'four star'),
+        (5,'five star')
+    )
+    post=models.ForeignKey(Book,related_name='review_of_book', on_delete=models.CASCADE)
+    rating=models.PositiveSmallIntegerField(choices=stars,default=1)
+    title=models.CharField(max_length=200)
+    description =models.TextField(blank=True)
+    review_author=models.ForeignKey(User,default=1 ,on_delete=models.CASCADE)
+
+    def _str_(self):
+        return self.title

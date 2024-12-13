@@ -12,18 +12,45 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
                     {% if request.user.is_authenticated %}
-                        <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="{% url 'student_dashboard' %}">Home</a>
+                        {% if is_librarian %}
+                            <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="{% url 'librarian_dashboard' %}">
+                                <i class="fas fa-home"></i>
+                            </a>
+                        {% else %}
+                            <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="{% url 'student_dashboard' %}">
+                                <i class="fas fa-home"></i>
+                            </a>
+                        {% endif %}
                     {% else %}
-                        <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="{% url 'landing_page' %}">Home</a>
+                        <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="{% url 'landing_page' %}">
+                            <i class="fas fa-home"></i>
+                        </a>
                     {% endif %}
                 </li>
+                
                 <li class="nav-item">
-                    <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="#">About</a>
+                    {% if request.user.is_authenticated %}
+                        {% if is_librarian %}
+                            <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="{% url 'librarian_dashboard' %}">
+                                <i class="fas fa-user"></i> <!-- Font Awesome User Icon -->
+                            </a>
+                        {% else %}
+                            <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="{% url 'student_profile' %}">
+                                <i class="fas fa-user"></i> <!-- Font Awesome User Icon -->
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="{% url 'landing_page' %}">
+                            <i class="fas fa-user"></i> <!-- Font Awesome User Icon -->
+                        </a>
+                    {% endif %}
                 </li>
+                
+                
                 <!-- Notification Bell for Logged-in Students -->
                 {% if request.user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="#" id="notificationBell">
+                        <a class="nav-link text-dark px-3 py-2 nav-item-custom" href="{% url 'notifications' %}" id="notificationBell">
                             <i class="fas fa-bell"></i> <!-- Bell icon -->
                             <span class="badge bg-danger" id="notificationBadge" style="display: none;">3</span> <!-- Badge for unread notifications -->
                         </a>

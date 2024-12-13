@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">{{ book.title }}</h2>
+
+    <div class="row">
+        <!-- Book Image -->
+        <div class="col-md-4">
+            {% if book.book_image %}
+                <img src="{{ book.book_image.url }}" class="img-fluid" alt="{{ book.title }}">
+            {% else %}
+                <img src="{% static 'images/default_book.png' %}" class="img-fluid" alt="Default Image">
+            {% endif %}
+        </div>
+        <!-- Book Details -->
+        <div class="col-md-8">
+            <h4>Author: {{ book.author.name }}</h4>
+            <p><strong>Category:</strong> {{ book.category.name }}</p>
+            <p><strong>Language:</strong> {{ book.language.name }}</p>
+            <p><strong>Price:</strong> ${{ book.price }}</p>
+            <p><strong>Quantity:</strong> {{ book.quantity }}</p>
+            <p><strong>Description:</strong> {{ book.description }}</p>
+        </div>
+    </div>
+
+    <!-- Reviews and Ratings -->
+    <div class="mt-5">
+        <h4>Reviews and Ratings</h4>
+        {% if reviews %}
+            <ul class="list-group">
+                {% for review in reviews %}
+                    <li class="list-group-item">
+                        <strong>{{ review.user.username }}</strong> ({{ review.rating }}/5): {{ review.review_text }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No reviews yet. Be the first to review!</p>
+        {% endif %}
+    </div>
+
+    <!-- Add Review and Rating Form -->
+    <div class="mt-4">
+        <h4>Add Your Review</h4>
+        <form method="post" action="{% url 'add_review' book.id %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="rating">Rating (1-5):</label>
+                <input type="number" name="rating" id="rating" class="form-control" min="1" max="5" required>
+            </div>
+            <div class="form-group mt-2">
+                <label for="review_text">Review:</label>
+                <textarea name="review_text" id="review_text" class="form-control" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Submit Review</button>
+        </form>
+    </div>
+
+    <!-- Back to Book List -->
+    <div class="text-center mt-4">
+        <a href="{% url 'list_all_books' %}" class="btn btn-secondary rounded-pill px-4 py-2">Back to Books</a>
+    </div>
+</div>
+{% endblock %}

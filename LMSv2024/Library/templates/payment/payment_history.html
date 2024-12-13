@@ -57,4 +57,7 @@
     {% else %}
         <p class="text-center">No payment history found.</p>
     {% endif %}
+    <div class="text-center">
+        <a href="{% url 'student_dashboard' %}" class="btn btn-primary mt-3">Go to Dashboard</a>
+    </div>
 {% endblock %}

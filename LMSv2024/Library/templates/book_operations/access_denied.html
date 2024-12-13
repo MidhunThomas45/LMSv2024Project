@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Access Denied</h2>
+    <p>Sorry, you do not have permission to access this book.</p>
+    <a href="{% url 'list_all_books' %}" class="btn btn-primary">Back to Books</a>
+</div>
+{% endblock %}

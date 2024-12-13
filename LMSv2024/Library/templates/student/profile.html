@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4 font-weight-bold">Your Profile</h2>
+
+    <!-- Profile Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-primary text-white text-center rounded-top">
+                    <h5 class="card-title mb-0">Student Profile</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Profile Details -->
+                    <div class="row">
+                        
+                        <div class="col-md-8">
+                            <h4 class="mb-3 text-primary font-weight-bold">Personal Information</h4>
+                            <p><strong>Username:</strong> {{ user.username }}</p>
+                            <p><strong>Name:</strong> {{ user.first_name }}</p>
+                            <!-- <p><strong>Last Name:</strong> {{ user.last_name }}</p> -->
+                            <p><strong>Email:</strong> {{ user.email }}</p>
+                            <p><strong>Member Since:</strong> {{ user.date_joined|date:"F d, Y" }}</p>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Edit Profile Button -->
+                    <div class="text-center mt-4">
+                        <a href="{% url 'edit_profile' %}" class="btn btn-success btn-lg rounded-pill px-5">Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- Back to Dashboard button -->
+<div class="back-btn-container">
+    <a href="{% url 'student_dashboard' %}" class="btn-back-to-dashboard">Back to Dashboard</a>
+</div>
+<style>
+    /* Container Styling */
+
+
+    /* Heading Styling */
+    .font-weight-bold {
+        font-weight: 700;
+    }
+
+    /* Card Styling */
+    .card {
+        border-radius: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15); /* Hover effect for card */
+    }
+
+    .card-header {
+        padding: 20px;
+        background-color: #007bff;
+        color: white;
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    /* Profile Image Styling */
+    .img-fluid {
+        max-width: 150px;
+        border: 5px solid #007bff;
+    }
+
+    /* Button Styling */
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+    /* Text Styling */
+    .card-title {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+
+    .card-text {
+        font-size: 1.1rem;
+        color: #555;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 20px;
+        }
+    }
+    /* Back to Dashboard Button Styling */
+    .back-btn-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .btn-back-to-dashboard {
+        display: inline-block;
+        background-color: #6c757d; /* Secondary button color */
+        color: #fff;
+        padding: 6px 15px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        border-radius: 50px;
+        text-decoration: none;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .btn-back-to-dashboard:hover {
+        background-color: #5a6268;
+        transform: translateY(-3px); /* Slight lift effect */
+        color: #fff;
+    }
+
+</style>
+{% endblock %}
+
+<!-- new commit -->
